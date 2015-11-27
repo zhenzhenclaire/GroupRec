@@ -76,7 +76,10 @@ public class DurationComputing {
         }
 
         String origin = group.makeOriginURL();
+        origin = java.net.URLEncoder.encode(origin, "utf-8");
+
         String destination = group.destinationAd;
+        destination = java.net.URLEncoder.encode(destination, "utf-8");
 
         String baseURL = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=oriGPS&destinations=desGPS&language=en";
         String URL = baseURL.replaceAll("oriGPS", origin);
@@ -88,15 +91,12 @@ public class DurationComputing {
         HttpClient httpclient = new DefaultHttpClient();
 
         httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT,600000);
-        httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,600000);
+        httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 600000);
 
         //URL = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=40.7575,-73.9700&destinations=32.7974,-96.8256";
 
-        String mytext = java.net.URLEncoder.encode(URL, "utf-8");
-        String mytext2 = java.net.URLDecoder.decode(mytext, "utf-8");
-        logger.info("mytext2:" + mytext2);
         // Setup the HTTP GET method
-        HttpGet rootServiceDoc = new HttpGet(mytext2);
+        HttpGet rootServiceDoc = new HttpGet(URL);
 
         HttpResponse response;
 
