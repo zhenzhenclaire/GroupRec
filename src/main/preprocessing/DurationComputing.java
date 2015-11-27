@@ -7,6 +7,7 @@ import org.apache.http.conn.ClientConnectionManager;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import org.apache.http.params.CoreConnectionPNames;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -22,17 +23,62 @@ import java.util.logging.Logger;
 public class DurationComputing {
     static Logger logger = Logger.getLogger("DistanceComputing");
 
-    public static ArrayList<String> getDuration(String origin, String destination) throws Exception {
+    /**
+     * Get distance or duration from JSON from GoogleMap API
+     * @param resultJSON
+     * @param type  distance or duration
+     * @return  distance(duration) list of the group
+     */
+    public static ArrayList<String> getDurationOrDistance(JSONObject resultJSON, String type){
+        ArrayList<String> durationList = new ArrayList<String>();
+        ArrayList<String> distanceList = new ArrayList<String>();
+        JSONArray ja = resultJSON.getJSONArray("rows");
+
+        for(int i = 0;i < ja.length();i++){
+            JSONArray elements = ja.getJSONObject(i).getJSONArray("elements");
+
+            String distance = elements.getJSONObject(0).getJSONObject("distance").getString("text");
+
+            logger.info("distance:" + distance);
+
+            distanceList.add(distance);
+
+            String duration = elements.getJSONObject(0).getJSONObject("duration").getString("text");
+
+            logger.info("duration" + duration);
+
+            durationList.add(duration);
+
+        }
+
+        if(type.equals("distance")){
+            return distanceList;
+        }
+        else{
+            return durationList;
+        }
+    }
+
+    /**
+     * GoogleMap API call method
+     * @param group
+     * @return  JSONObject of GoogleMap API
+     * @throws Exception
+     */
+    public static JSONObject GoogleMapCall(Group group) throws Exception {
         //URL to get the distance
         //https://maps.googleapis.com/maps/api/distancematrix/output?parameters
 
-       ArrayList<String> groupDuration = new ArrayList<String>();
+        JSONObject resultJSON = new JSONObject();
 
-        if(origin == null || "".equals(origin) || destination == null || "".equals(destination)){
-            return groupDuration;
+        if (group == null) {
+            return resultJSON;
         }
 
-        String baseURL = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=oriGPS&destinations=desGPS";
+        String origin = group.makeOriginURL();
+        String destination = group.destinationAd;
+
+        String baseURL = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=oriGPS&destinations=desGPS&language=en";
         String URL = baseURL.replaceAll("oriGPS", origin);
         URL = URL.replaceAll("desGPS", destination);
 
@@ -41,9 +87,16 @@ public class DurationComputing {
         // Setup the HttpClient
         HttpClient httpclient = new DefaultHttpClient();
 
-        URL = "www.baidu.com";
+        httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT,600000);
+        httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,600000);
+
+        //URL = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=40.7575,-73.9700&destinations=32.7974,-96.8256";
+
+        String mytext = java.net.URLEncoder.encode(URL, "utf-8");
+        String mytext2 = java.net.URLDecoder.decode(mytext, "utf-8");
+        logger.info("mytext2:" + mytext2);
         // Setup the HTTP GET method
-        HttpGet rootServiceDoc = new HttpGet(URL);
+        HttpGet rootServiceDoc = new HttpGet(mytext2);
 
         HttpResponse response;
 
@@ -59,18 +112,7 @@ public class DurationComputing {
 
                 logger.info("json from response: " + json);
 
-                JSONObject tempResult = new JSONObject(json);
-
-                JSONArray ja = tempResult.getJSONArray("rows");
-
-                for(int i = 0;i < ja.length();i++){
-                    JSONArray elements = ja.getJSONObject(i).getJSONArray("elements");
-                    String distance = elements.getJSONObject(0).getJSONObject("distance").getString("text");
-                    String duration = elements.getJSONObject(0).getJSONObject("duration").getString("text");
-                    logger.info("distance:" + distance);
-                    logger.info("duration" + duration);
-                    groupDuration.add(duration);
-                }
+                resultJSON = new JSONObject(json);
 
             } else {
                 // Release allocated resources
@@ -84,9 +126,9 @@ public class DurationComputing {
             // Shutdown the HTTP connection
             httpclient.getConnectionManager().shutdown();
         }
-
-        return groupDuration;
+        return resultJSON;
     }
+
 
     /**
      * Utility method to pass HttpResponse to get the response body
@@ -122,36 +164,34 @@ public class DurationComputing {
     }
 
     public static void main(String[] args){
-        ArrayList<User> userList = new ArrayList<User>();
+        ArrayList<Person> PersonList = new ArrayList<Person>();
 
-        User user1 = new User("40.7575","-73.9700");
-        userList.add(user1);
-        User user2 = new User("40.7596","-73.9847");
-        userList.add(user2);
-        User user3 = new User("34.0727","-118.3729");
-        userList.add(user3);
-//        User user4 = new User("33.4531","-111.9863");
-//        userList.add(user4);
-//        User user5 = new User("32.9515","-96.8286");
-//        userList.add(user5);
-//        User user6 = new User("32.8978","-97.0398");
-//        userList.add(user6);
-//        User user7 = new User("37.7878","-122.4087");
-//        userList.add(user7);
-
-        Group group = new Group(userList);
-        String originsString = group.makeOriginURL();
-        logger.info("originString:" + originsString);
+        Person Person1 = new Person("40.7575","-73.9700");
+        PersonList.add(Person1);
+        Person Person2 = new Person("40.7596","-73.9847");
+        PersonList.add(Person2);
+        Person Person3 = new Person("34.0727","-118.3729");
+        PersonList.add(Person3);
+//        Person Person4 = new Person("33.4531","-111.9863");
+//        PersonList.add(Person4);
+//        Person Person5 = new Person("32.9515","-96.8286");
+//        PersonList.add(Person5);
+//        Person Person6 = new Person("32.8978","-97.0398");
+//        PersonList.add(Person6);
+//        Person Person7 = new Person("37.7878","-122.4087");
+//        PersonList.add(Person7);
 
         String destination = "32.7974,-96.8256";
+        Group group = new Group(PersonList,destination);
 
         try {
-            ArrayList<String> durationList = getDuration(originsString, destination);
+            ArrayList<String> durationList = getDurationOrDistance(GoogleMapCall(group),"duration");
             for(int i = 0;i < durationList.size();i++){
-                logger.info("user" + i + ":" + durationList.get(i));
+                logger.info("Person" + i + ":" + durationList.get(i));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 }
+//https://maps.googleapis.com/maps/api/distancematrix/json?origins=40.7575,-73.9700|40.7596,-73.9847|34.0727,-118.3729&destinations=32.7974,-96.8256
