@@ -1,3 +1,5 @@
+package com.claire.preprocessing;
+
 import org.json.JSONObject;
 import org.apache.log4j.Logger;
 

@@ -1,3 +1,7 @@
+package com.claire.util;
+
+import com.claire.util.Person;
+
 import java.util.ArrayList;
 
 /**
@@ -5,7 +9,7 @@ import java.util.ArrayList;
  */
 public class Group {
     ArrayList<Person> group;
-    String destinationAd;
+    public String destinationAd;
 
     public Group(ArrayList<Person> group, String des){
         this.group = group;

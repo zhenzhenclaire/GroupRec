@@ -1,3 +1,5 @@
+package com.claire.analysis;
+
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.mahout.clustering.spectral.kmeans.SpectralKMeansDriver;
 
