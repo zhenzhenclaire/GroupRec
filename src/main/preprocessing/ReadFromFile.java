@@ -16,7 +16,9 @@ public class ReadFromFile {
             reader = new BufferedReader(new FileReader(file));
             String tempString = null;
             int line = 1;
-            while ((tempString = reader.readLine()) != null) {
+            while ((tempString = reader.readLine()) != null && line < 10) {
+                //int num = tempString.split(",").length;
+
                 System.out.println("line " + line + ": " + tempString);
                 line++;
             }
@@ -34,8 +36,10 @@ public class ReadFromFile {
     }
 
     public static void main(String[] args){
-        String dataPath = "DataResource/HotelUserInfo/";
-        readFileByLines(dataPath + "part-00000");
+        //String dataPath = "DataResource/HotelUserInfo/part-00000";
+        //String dataPath = "DataResource/CD-00001-00000002.dat";
+        String dataPath = "DataResource/RatingMatrix.txt";
+        readFileByLines(dataPath);
     }
 }
 

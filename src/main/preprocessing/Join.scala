@@ -1,3 +1,5 @@
+import org.apache.spark.{SparkContext, SparkConf}
+
 /**
  * Created by admin on 2015/11/3.
  * Ref: http://developer.51cto.com/art/201401/426591.htm
@@ -14,11 +16,21 @@ object Join {
     // HotelInfo includes: name, region, street-address, postal-code, locality
     val hotelFile = sc.textFile(dataPath + "Hotel.txt")
     val hotel = hotelFile.map(line => {
-      val index = line.indexOf(",")
-      val HotelInfo = line.substring(index + 1)
-      val HotelID = line.substring(0, index)
-      (HotelID, HotelInfo)
-    })
+      val numOfField = line.split(",")
+      if(numOfField.length == 6) {
+        val index = line.indexOf(",")
+        val HotelInfo = line.substring(index + 1)
+        val HotelID = line.substring(0, index)
+        (HotelID, HotelInfo)
+      }
+      else{
+        (null,null)
+      }
+    }).filter(
+        m => {
+          m._1 != null
+        }
+      )
 
     // Extract  (HotelID, GPS) from locationFile
     // GPS includes: longitude & latitude
@@ -33,23 +45,46 @@ object Join {
 
     // Extract (HotelID, UserID, Price, Rating) from ratingFile
     val ratingFile = sc.textFile(dataPath + "CD-00001-00000001.dat")
+    val header = ratingFile.first()
+
     val rating = ratingFile.map(line => {
       val fields = line.split(",")
-      val Hotel_User = fields(0) + "," + fields(1)
-      val Price = fields(2)
-      val len = Hotel_User.length + Price.length + 1;
-      val Price_Ratings =  Price + "," + line.substring(len + 1)
-      (Hotel_User, Price_Ratings)
-    })
+      if(fields.length == 12 && !line.equals(header)) {
+        val Hotel_User = fields(0) + "," + fields(1)
+        val Price = fields(2)
+        val len = Hotel_User.length + Price.length + 1;
+        val Price_Ratings = Price + "," + line.substring(len + 1)
+        (Hotel_User, Price_Ratings)
+      }
+      else{
+        (null,null)
+      }
+    }).filter(
+        m => {
+          m._1 != null
+        }
+      )
 
     // Extract  (HotelID, UserID, Date) from commentFile
     val commentFile = sc.textFile(dataPath + "CD-00001-00000002.dat")
+    val commentHeader = commentFile.first()
+
+
     val comments = commentFile.map(line =>{
       val fields = line.split(",")
-      val Hotel_User = fields(0) + "," + fields(1)
-      val Date = fields(2)
-      (Hotel_User, Date)
-    })
+      if(fields.length == 4 && !line.equals(commentHeader)) {
+        val Hotel_User = fields(0) + "," + fields(1)
+        val Date = fields(2)
+        (Hotel_User, Date)
+      }
+      else{
+        (null,null)
+      }
+    }).filter(
+            m => {
+              m._1 != null
+            }
+      )
 
     /**
      * join(otherDataset, [numTasks])
@@ -88,7 +123,8 @@ object Join {
     //By third join, we get <hotelId, hotelInfo, userInfo>
     val hotelUserInfoFile = hotelAllInfo
       .join(UserInfo)
-      .map(f => (f._1, f._2._1, f._2._2))
+      .map(f => (f._1, f._2._1, f._2._2).toString().replace("(","").replace(")",""))
+
     hotelUserInfoFile.coalesce(3,true).saveAsTextFile(dataPath + "HotelUserInfo")
   }
 }
