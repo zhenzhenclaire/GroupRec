@@ -33,10 +33,10 @@ public class SpectralClustering {
 
     public static  void main(String[] args) throws Exception {
         String dataResource = "DataResource/";
-        input = dataResource + "test.txt";
+        input = dataResource + "parsedMatrix";
         output = dataResource + "result";
-        numDims = 4;
-        clusters = 3;
+        numDims = 39633;
+        clusters = 10;
         maxIterations = 1;
         clustering();
 

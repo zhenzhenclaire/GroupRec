@@ -50,7 +50,7 @@ public class BuildMatrix {
                     String[] fields = tempString.split(",");
                     hotelID = fields[0];
                     userID = fields[8];
-                    if(blackList.contains(userID))  continue;
+                    if(blackList.contains(userID) || userID.trim().length() == 0)  continue;
                     overallRating = fields[11];
                     outString = hotelID + "," + userID + "," + overallRating;
                     writer.write(outString);
