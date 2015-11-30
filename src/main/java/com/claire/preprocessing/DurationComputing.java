@@ -2,15 +2,14 @@ package com.claire.preprocessing;
 
 import com.claire.util.Group;
 import com.claire.util.Person;
+
+import org.apache.http.client.HttpClient;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ClientConnectionManager;
 
 import org.apache.http.impl.client.DefaultHttpClient;
-
 import org.apache.http.params.CoreConnectionPNames;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -198,4 +197,4 @@ public class DurationComputing {
         }
     }
 }
-//https://maps.googleapis.com/maps/api/distancematrix/json?origins=40.7575,-73.9700|40.7596,-73.9847|34.0727,-118.3729&destinations=32.7974,-96.8256
+////https://maps.googleapis.com/maps/api/distancematrix/json?origins=40.7575,-73.9700|40.7596,-73.9847|34.0727,-118.3729&destinations=32.7974,-96.8256

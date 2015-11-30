@@ -2,11 +2,15 @@ package com.claire.analysis;
 
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.mahout.clustering.spectral.kmeans.SpectralKMeansDriver;
+import org.apache.mahout.utils.SequenceFileDumper;
 
-
+/**
+ * http://blog.csdn.net/xyilu/article/details/9883701
+ */
 public class SpectralClustering {
 
-    static String input ;
+    static String input;
+    static String seqOutput;
     static String output;
     static int numDims;
     static int clusters;
@@ -21,7 +25,7 @@ public class SpectralClustering {
         args[0] = "-i";
         args[1] = input;
         args[2] = "-o";
-        args[3] = output;
+        args[3] = seqOutput;
         args[4] = "-d";
         args[5] = numDims + "";
         args[6] = "-k";
@@ -31,15 +35,29 @@ public class SpectralClustering {
         clustering(args);
     }
 
+    public static void readSequenceFile(String[] args) throws Exception {
+        new SequenceFileDumper().run(args);
+    }
+
+    public static void readSequenceFile() throws Exception {
+        String[] args = new String[5];
+        args[0] = "";
+        args[1] = "-s";
+        args[2] = seqOutput;
+        args[3] = "-o";
+        args[4] = output;
+        readSequenceFile(args);
+    }
     public static  void main(String[] args) throws Exception {
         String dataResource = "DataResource/";
         input = dataResource + "parsedMatrix";
-        output = dataResource + "result";
+        seqOutput = dataResource + "result";
+        output = dataResource + "finalResult";
         numDims = 39633;
         clusters = 10;
         maxIterations = 1;
-        clustering();
-
-
+//        clustering();
+        readSequenceFile();
     }
+
 }
