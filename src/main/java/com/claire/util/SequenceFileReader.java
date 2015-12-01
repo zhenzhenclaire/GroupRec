@@ -46,8 +46,9 @@ public class SequenceFileReader {
     }
 
     public static void main(String[] args) throws Exception {
-        String remotePath = "/claire/kmeansout/clusters-1-final/part-r-00000";
-        String localPath = "DataResource/cluster1";
+        //String remotePath = "/claire/mahout_input/clusterResult/kmeans_out/clusteredPoints/part-m-00000";
+        String remotePath = "/claire/mahout_input/clusterResult/kmeans_out/clusters-1-final/part-r-00000";
+        String localPath = "DataResource/finalResult";
         convertSeqFile(remotePath,localPath);
     }
 }
