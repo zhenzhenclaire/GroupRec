@@ -11,6 +11,7 @@ import java.util.logging.Logger;
  * hadoop fs -put /home/claire/IdeaProjects/GroupRec/DataResource/squareMatrix /claire/mahout_input
  * bin/mahout spectralkmeans -i /home/claire/IdeaProjects/GroupRec/DataResource/squareMatrix -o /claire/mahout_input/clusterResult -d 40025 -k 10 -x 5
  * bin/mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResult -d 40025 -k 10 -x 5
+ * mahout clusterdump -i /claire/mahout_input/clusterResult/kmeans_out/clusters-2-final -o /home/claire/IdeaProjects/GroupRec/DataResource/hundredIterResult.txt -b 100 -p /claire/mahout_input/clusterResult/kmeans_out/clusteredPoints
  * Created by claire on 11/28/15.
  */
 public class ReflectMatrix {

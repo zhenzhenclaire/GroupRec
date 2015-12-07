@@ -1,0 +1,8 @@
+Input Path: /claire/mahout_input/clusterResult/clusters-0/part-eigenSeed
+Key class: class org.apache.hadoop.io.Text Value Class: class org.apache.mahout.clustering.iterator.ClusterWritable
+Key: 12000: Value: org.apache.mahout.clustering.iterator.ClusterWritable@4790479a
+Key: 10735: Value: org.apache.mahout.clustering.iterator.ClusterWritable@4790479a
+Key: 27539: Value: org.apache.mahout.clustering.iterator.ClusterWritable@4790479a
+Key: 5379: Value: org.apache.mahout.clustering.iterator.ClusterWritable@4790479a
+Key: 8315: Value: org.apache.mahout.clustering.iterator.ClusterWritable@4790479a
+Count: 5
