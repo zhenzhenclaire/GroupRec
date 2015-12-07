@@ -144,20 +144,26 @@ public class ReflectMatrix {
         BufferedReader reader = new BufferedReader(new FileReader(parsedMatrix));
         BufferedWriter writer = new BufferedWriter(new FileWriter(new File(squareMatrix)));
 
-
-
         String tempString = "";
         while((tempString = reader.readLine()) != null){
+            writer.write(tempString);
+            writer.newLine();
+
             int uid = 0;
             int hid = 0;
             String[] strings = tempString.split(",");
-            writer.write(hid + "," + uid + "," + strings[2]);
-            writer.newLine();
 
             hid = Integer.parseInt(strings[0]);
             uid = Integer.parseInt(strings[1]);
 
-            writer.write(uid + numOfHotels + "," + hid + numOfUsers + "," + strings[2]);
+//            numOfHotels = 5;
+//            numOfUsers = 4;
+
+            int newHid = uid + numOfHotels;
+            int newUid = hid + numOfUsers;
+//            logger.info("hid:" + newHid + ", uid:" + newUid);
+
+            writer.write(newHid + "," + newUid + "," + strings[2]);
             writer.newLine();
         }
 
@@ -174,11 +180,20 @@ public class ReflectMatrix {
         String squareMatrix = dataPath + "squareMatrix";
 
         BuildMatrix buildMatrix = new BuildMatrix();
-//        buildMatrix.makeMatrix(inputPath, originalMatrix);
+        //buildMatrix.makeMatrix(inputPath, originalMatrix);
 
         ReflectMatrix rm = new ReflectMatrix(originalMatrix, parsedMatrix, squareMatrix);
-//        rm.readMatrix();
+        rm.readMatrix();
         rm.makeAdjacencyMatrix();
+
+
+        //Test
+//        String parsedMatrixTest = dataPath + "parseMatrixTest";
+//        String squareMatrixTest = dataPath + "squareMatrixTest";
+//        ReflectMatrix rmTest = new ReflectMatrix(originalMatrix, parsedMatrixTest, squareMatrixTest);
+//
+//        rmTest.makeAdjacencyMatrix();
+
 
     }
 
