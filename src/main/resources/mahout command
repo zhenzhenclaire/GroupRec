@@ -1,0 +1,39 @@
+hadoop fs -put /home/claire/IdeaProjects/GroupRec/DataResource/squareMatrix /claire/mahout_input
+hadoop fs -put /home/claire/IdeaProjects/GroupRec/DataResource/clusterTest /claire/mahout_test_input
+
+mahout spectralkmeans -i /home/claire/IdeaProjects/GroupRec/DataResource/squareMatrix -o /claire/mahout_input/clusterResult -d 40025 -k 10 -x 5
+
+mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResult -d 40025 -k 5 -x 5
+mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_test_input/clusterTest -o /claire/mahout_test_input/clusterTestResult -d 6 -k 2 -x 2
+
+mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResultTest -d 40025 -k 5 -x 5 >> /tmp/console.txt 2>&1 &
+
+// 100 Clusters
+mahout seqdumper -i /claire/mahout_input/clusterResult/kmeans_out/clusteredPoints -o /home/claire/IdeaProjects/GroupRec/DataResource/hundredCluster/clusteredPoints
+mahout seqdumper -i /claire/mahout_input/clusterResult/kmeans_out/clusters-2-final -o /home/claire/IdeaProjects/GroupRec/DataResource/hundredCluster/clusters-2-final
+mahout seqdumper -i /claire/mahout_input/clusterResult/clusters-0/part-eigenSeed -o /home/claire/IdeaProjects/GroupRec/DataResource/hundredCluster/part-eigenSeed
+
+mahout clusterdump -i /claire/mahout_input/clusterResult/kmeans_out/clusters-2-final -o /home/claire/IdeaProjects/GroupRec/DataResource/hundredCluster/hundredIterResult.txt -b 100 -p /claire/mahout_input/clusterResult/kmeans_out/clusteredPoints
+
+// 5 Clusters
+mahout seqdumper -i /claire/mahout_input/clusterResult/kmeans_out/clusteredPoints -o /home/claire/IdeaProjects/GroupRec/DataResource/fiveCluster/clusteredPoints
+mahout seqdumper -i /claire/mahout_input/clusterResult/kmeans_out/clusters-2-final -o /home/claire/IdeaProjects/GroupRec/DataResource/fiveCluster/clusters-2-final
+mahout seqdumper -i /claire/mahout_input/clusterResult/clusters-0/part-eigenSeed -o /home/claire/IdeaProjects/GroupRec/DataResource/fiveCluster/part-eigenSeed
+
+mahout clusterdump -i /claire/mahout_input/clusterResult/kmeans_out/clusters-2-final -o /home/claire/IdeaProjects/GroupRec/DataResource/fiveCluster/fiveClustersResult.txt -b 100 -p /claire/mahout_input/clusterResult/kmeans_out/clusteredPoints
+
+//Iterator times test
+//* 10
+mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResultTest10_1 -d 40025 -k 5 -x 10 >> /tmp/ten1.txt 2>&1 &
+mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResultTest10_2 -d 40025 -k 5 -x 10 >> /tmp/ten2.txt 2>&1 &
+mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResultTest10_3 -d 40025 -k 5 -x 10 >> /tmp/ten3.txt 2>&1 &
+
+//* 100
+mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResultTest100_1 -d 40025 -k 5 -x 100 >> /tmp/hundred1.txt 2>&1 &
+mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResultTest100_2 -d 40025 -k 5 -x 100 >> /tmp/hundred2.txt 2>&1 &
+mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResultTest100_3 -d 40025 -k 5 -x 100 >> /tmp/hundred3.txt 2>&1 &
+
+* 1000
+mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResultTest1000_1 -d 40025 -k 5 -x 100 >> /tmp/thousand1.txt 2>&1 &
+mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResultTest1000_2 -d 40025 -k 5 -x 100 >> /tmp/thousand2.txt 2>&1 &
+mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResultTest1000_3 -d 40025 -k 5 -x 100 >> /tmp/thousand3.txt 2>&1 &
