@@ -1,5 +1,7 @@
 package com.claire.preprocessing;
 
+import com.claire.util.Config;
+
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,7 +13,6 @@ import java.util.logging.Logger;
  */
 public class BuildMatrix {
     static Logger logger = Logger.getLogger("BuildMatrix");
-    public static String dataPath = "DataResource/";
     public static Set<String> blackList = new HashSet<String>();
 
     /**
@@ -43,7 +44,7 @@ public class BuildMatrix {
         File inputFile = new File(inputPath);
         File[] files = inputFile.listFiles();
 
-        readBlackList(dataPath + "BlackList");
+        readBlackList(Config.dataPath + "BlackList");
         logger.info(" Loaded blacklist");
 
         BufferedReader reader = null;
@@ -101,8 +102,8 @@ public class BuildMatrix {
 
 
     public static  void main(String[] args) throws Exception {
-        String inputPath = dataPath + "HotelUserInfo";
-        String ratingMatrixPath = dataPath + "RatingMatrix.txt";
+        String inputPath = Config.dataPath + "HotelUserInfo";
+        String ratingMatrixPath = Config.dataPath + "RatingMatrix.txt";
 
         makeMatrix(inputPath, ratingMatrixPath);
     }

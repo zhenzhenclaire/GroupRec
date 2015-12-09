@@ -1,14 +1,60 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+package com.claire.preprocessing;
+
+import com.claire.util.Config;
+import org.apache.hadoop.hdfs.DFSClient;
+
+import java.io.*;
+import java.util.logging.Logger;
 
 /**
+ * Util class to deal with files.
  * Created by Claire on 11/10/2015.
  */
 public class ReadFromFile {
+    static Logger logger = Logger.getLogger("ReadFromFile");
 
-    public static void readFileByLines(String fileName) {
+    public void rewriteFromTargetString(String inputFile, String outputFile, String targetString){
+        File file = new File(inputFile);
+        BufferedReader reader = null;
+        BufferedWriter writer = null;
+
+        try {
+            logger.info("Start read file:" + inputFile);
+            reader = new BufferedReader(new FileReader(file));
+            writer = new BufferedWriter(new FileWriter(new File(outputFile)));
+            String tempString = null;
+            Boolean flag = false;
+            while ((tempString = reader.readLine()) != null) {
+                //logger.info(tempString);
+                if(flag || tempString.contains(targetString)){
+                    if(tempString.contains("SpectralKMeansDriver:")){
+                        String[] contents = tempString.split("SpectralKMeansDriver:");
+                        writer.write(contents[1]);
+                        writer.newLine();
+                        flag = true;
+                    }
+                }
+                else{
+                    continue;
+                }
+            }
+            reader.close();
+            writer.flush();
+            writer.close();
+            logger.info("Done processing.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e1) {
+                }
+            }
+        }
+    }
+
+    public void readFileByLines(String fileName) {
         File file = new File(fileName);
         BufferedReader reader = null;
         try {
@@ -38,8 +84,14 @@ public class ReadFromFile {
     public static void main(String[] args){
         //String dataPath = "DataResource/HotelUserInfo/part-00000";
         //String dataPath = "DataResource/CD-00001-00000002.dat";
-        String dataPath = "DataResource/RatingMatrix.txt";
-        readFileByLines(dataPath);
+        ReadFromFile readFromFile = new ReadFromFile();
+        //readFromFile.readFileByLines(Config.dataPath + "/");
+
+        String inputPath = Config.dataPath + "twentyClusters/thousand20.txt";
+        String outputPath = Config.dataPath + "twentyClusters/thousand20Class.txt";
+        String targetString = "INFO SpectralKMeansDriver: 0: 8";
+
+        readFromFile.rewriteFromTargetString(inputPath,outputPath,targetString);
     }
 }
 

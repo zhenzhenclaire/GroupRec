@@ -37,3 +37,6 @@ mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix 
 mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResultTest1000_1 -d 40025 -k 5 -x 100 >> /tmp/thousand1.txt 2>&1 &
 mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResultTest1000_2 -d 40025 -k 5 -x 100 >> /tmp/thousand2.txt 2>&1 &
 mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResultTest1000_3 -d 40025 -k 5 -x 100 >> /tmp/thousand3.txt 2>&1 &
+
+//# of clusters
+mahout spectralkmeans -i hdfs://localhost:9000/claire/mahout_input/squareMatrix -o /claire/mahout_input/clusterResultTest1000_20 -d 40025 -k 20 -x 100 >> /tmp/thousand20.txt 2>&1 &

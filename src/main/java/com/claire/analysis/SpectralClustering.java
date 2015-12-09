@@ -1,5 +1,6 @@
 package com.claire.analysis;
 
+import com.claire.util.Config;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.mahout.clustering.spectral.kmeans.SpectralKMeansDriver;
 import org.apache.mahout.utils.SequenceFileDumper;
@@ -49,10 +50,10 @@ public class SpectralClustering {
         readSequenceFile(args);
     }
     public static  void main(String[] args) throws Exception {
-        String dataResource = "DataResource/";
-        input = dataResource + "parsedMatrix";
-        seqOutput = dataResource + "result";
-        output = dataResource + "finalResult";
+
+        input = Config.dataPath + "parsedMatrix";
+        seqOutput = Config.dataPath + "result";
+        output = Config.dataPath + "finalResult";
         numDims = 39633;
         clusters = 10;
         maxIterations = 1;

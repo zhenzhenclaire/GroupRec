@@ -180,12 +180,11 @@ public class ReflectMatrix {
         String squareMatrix = dataPath + "squareMatrix";
 
         BuildMatrix buildMatrix = new BuildMatrix();
-        //buildMatrix.makeMatrix(inputPath, originalMatrix);
+        //buildMatrix.makeMatrix(inputPgath, originalMatrix);
 
         ReflectMatrix rm = new ReflectMatrix(originalMatrix, parsedMatrix, squareMatrix);
         rm.readMatrix();
         rm.makeAdjacencyMatrix();
-
 
         //Test
 //        String parsedMatrixTest = dataPath + "parseMatrixTest";
