@@ -51,7 +51,7 @@ public class BuildMatrix {
         BufferedWriter writer = null;
 
         try {
-            writer = new BufferedWriter(new FileWriter(new File(outputPath)));
+            writer = new BufferedWriter(new FileWriter(outputPath));
             for(File file:files) {
 
                 if(!file.getName().startsWith("part-0000")) continue;

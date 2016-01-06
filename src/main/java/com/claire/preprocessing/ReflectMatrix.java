@@ -36,10 +36,12 @@ public class ReflectMatrix {
     /*
         Constructed function
      */
-    public ReflectMatrix(String originalMatrix, String parsedMatrix, String squareMatrix) {
+    public ReflectMatrix(String originalMatrix, String parsedMatrix, String squareMatrix, String userReflectionTable, String hotelReflectionTable) {
         this.parsedMatrix = parsedMatrix;
         this.squareMatrix = squareMatrix;
         this.originalMatrix = originalMatrix;
+        this.userReflectionTable = userReflectionTable;
+        this.hotelReflectionTable = hotelReflectionTable;
     }
 
     /**
@@ -172,19 +174,19 @@ public class ReflectMatrix {
         reader.close();
     }
 
-    public static void main(String[] args) throws Exception {
-        String inputPath = dataPath + "HotelUserInfo";
-
-        String originalMatrix = dataPath + "originalMatrix";
-        String parsedMatrix = dataPath + "parsedMatrix";
-        String squareMatrix = dataPath + "squareMatrix";
-
-        BuildMatrix buildMatrix = new BuildMatrix();
-        //buildMatrix.makeMatrix(inputPgath, originalMatrix);
-
-        ReflectMatrix rm = new ReflectMatrix(originalMatrix, parsedMatrix, squareMatrix);
-        rm.readMatrix();
-        rm.makeAdjacencyMatrix();
+//    public static void main(String[] args) throws Exception {
+//        String inputPath = dataPath + "HotelUserInfo";
+//
+//        String originalMatrix = dataPath + "originalMatrix";
+//        String parsedMatrix = dataPath + "parsedMatrix";
+//        String squareMatrix = dataPath + "squareMatrix";
+//
+//        BuildMatrix buildMatrix = new BuildMatrix();
+//        //buildMatrix.makeMatrix(inputPgath, originalMatrix);
+//
+//        ReflectMatrix rm = new ReflectMatrix(originalMatrix, parsedMatrix, squareMatrix);
+//        rm.readMatrix();
+//        rm.makeAdjacencyMatrix();
 
         //Test
 //        String parsedMatrixTest = dataPath + "parseMatrixTest";
@@ -194,6 +196,6 @@ public class ReflectMatrix {
 //        rmTest.makeAdjacencyMatrix();
 
 
-    }
+//    }
 
 }

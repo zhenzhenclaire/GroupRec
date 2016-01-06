@@ -3,8 +3,10 @@ package com.claire.analysis
 import org.apache.spark.{SparkConf, SparkContext}
 
 /**
- * Created by Claire on 2015/11/2
+ * Merge user and hotel of the same class
+  * Created by Claire on 2015/11/2
  */
+
 object ClassMerge {
 
   def main (args: Array[String]) {
