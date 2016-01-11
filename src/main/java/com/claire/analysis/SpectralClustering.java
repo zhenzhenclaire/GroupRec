@@ -1,6 +1,7 @@
 package com.claire.analysis;
 
 import com.claire.util.Config;
+import com.claire.util.SequenceFileReader;
 import org.apache.hadoop.hdfs.DFSClient;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.mahout.clustering.spectral.kmeans.SpectralKMeansDriver;
@@ -16,10 +17,11 @@ public class SpectralClustering {
     static Logger logger = Logger.getLogger("clustering");
     String input;
     String output;
-    public String consoleOutput = Config.dataPath + "/mahout/consoleOutputFromMahout";
+    public String consoleOutput = Config.dataPath + "/clustering/consoleOutputFromMahout";
     int numDims;
     int clusters;
     int maxIterations;
+    String mahoutOutput;
 
     public SpectralClustering(String input, String output,int numDims, int clusters, int maxIterations) {
         this.input = input;
@@ -27,6 +29,7 @@ public class SpectralClustering {
         this.numDims = numDims;
         this.clusters = clusters;
         this.maxIterations = maxIterations;
+        this.mahoutOutput = Config.dataPath + "clustering/mahoutResult/";
     }
 
     public void clustering(String[] args) throws Exception {
@@ -40,7 +43,8 @@ public class SpectralClustering {
         args[0] = "-i";
         args[1] = input;
         args[2] = "-o";
-        args[3] = Config.dataPath + "mahout";
+        //args[3] = Config.dataPath + "mahout";
+        args[3] = mahoutOutput;
         args[4] = "-d";
         args[5] = numDims + "";
         args[6] = "-k";
@@ -48,6 +52,50 @@ public class SpectralClustering {
         args[8] = "-x";
         args[9] = maxIterations + "";
         clustering(args);
+    }
+
+    public void extractClass(){
+        String sequencePath = mahoutOutput + "/kmeans_out/clusteredPoints/part-m-00000";
+        String textPath = Config.dataPath + "clustering/clusteredPoints";
+        SequenceFileReader sr = new SequenceFileReader(sequencePath, textPath);
+        try {
+            sr.convertSeqFile(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        File file = new File(textPath);
+        BufferedReader reader = null;
+        BufferedWriter writer = null;
+        int lineNum = 0;
+        try {
+            logger.info("Start read file:" + textPath);
+            reader = new BufferedReader(new FileReader(file));
+            writer = new BufferedWriter(new FileWriter(new File(output)));
+            String tempString = null;
+
+            while ((tempString = reader.readLine()) != null) {
+                //logger.info(tempString);
+                if(tempString.contains("<===>")){
+                    String[] contents = tempString.split("<===>");
+                    writer.write(lineNum + ":" + contents[0].trim());
+                    writer.newLine();
+                    lineNum++;
+                    }
+                }
+            } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        try {
+            reader.close();
+            writer.flush();
+            writer.close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        logger.info("Done processing.");
     }
 
     public void rewriteFromTargetString(String targetString){
