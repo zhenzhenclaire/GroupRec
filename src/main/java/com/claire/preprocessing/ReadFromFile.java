@@ -86,12 +86,13 @@ public class ReadFromFile {
         //String dataPath = "DataResource/CD-00001-00000002.dat";
         ReadFromFile readFromFile = new ReadFromFile();
         //readFromFile.readFileByLines(Config.dataPath + "/");
+//
+//        String inputPath = Config.dataPath + "twentyClusters/thousand20.txt";
+//        String outputPath = Config.dataPath + "twentyClusters/thousand20Class.txt";
+//        String targetString = "INFO SpectralKMeansDriver: 0: 8";
 
-        String inputPath = Config.dataPath + "twentyClusters/thousand20.txt";
-        String outputPath = Config.dataPath + "twentyClusters/thousand20Class.txt";
-        String targetString = "INFO SpectralKMeansDriver: 0: 8";
-
-        readFromFile.rewriteFromTargetString(inputPath,outputPath,targetString);
+        //readFromFile.rewriteFromTargetString(inputPath,outputPath,targetString);
+        readFromFile.readFileByLines(Config.dataPath + "HotelUserInfo/part-00000");
     }
 }
 

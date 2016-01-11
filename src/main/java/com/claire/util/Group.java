@@ -15,8 +15,6 @@ public class Group {
         this.group = group;
     }
 
-
-
     //This method is used for bindGPS info and make a string for Google API.
     public String makeOriginURL(){
 
