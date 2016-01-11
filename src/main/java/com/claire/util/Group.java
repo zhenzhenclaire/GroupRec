@@ -11,10 +11,11 @@ public class Group {
     ArrayList<Person> group;
     public String destinationAd;
 
-    public Group(ArrayList<Person> group, String des){
+    public Group(ArrayList<Person> group){
         this.group = group;
-        this.destinationAd = des;
     }
+
+
 
     //This method is used for bindGPS info and make a string for Google API.
     public String makeOriginURL(){
@@ -37,5 +38,21 @@ public class Group {
             }
         }
 
+    }
+
+    public String getDestinationAd() {
+        return destinationAd;
+    }
+
+    public void setDestinationAd(String destinationAd) {
+        this.destinationAd = destinationAd;
+    }
+
+    public ArrayList<Person> getGroup() {
+        return group;
+    }
+
+    public void setGroup(ArrayList<Person> group) {
+        this.group = group;
     }
 }

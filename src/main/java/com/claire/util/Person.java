@@ -8,9 +8,33 @@ public class Person {
     String longitude = "";
     String userID = "";
 
-    public Person(String lat, String lon){
+    public Person(String userID, String lat, String lon){
+        this.userID = userID;
         this.latitude = lat;
         this.longitude = lon;
     }
 
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
 }
