@@ -2,13 +2,11 @@ package com.claire.preprocessing;
 
 import com.claire.util.Group;
 import com.claire.util.Person;
-
-import org.apache.http.client.HttpClient;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.json.JSONArray;
@@ -169,11 +167,11 @@ public class DurationComputing {
     public static void main(String[] args){
         ArrayList<Person> PersonList = new ArrayList<Person>();
 
-        Person Person1 = new Person("40.7575","-73.9700");
+        Person Person1 = new Person("40.7575","-73.9700","");
         PersonList.add(Person1);
-        Person Person2 = new Person("40.7596","-73.9847");
+        Person Person2 = new Person("40.7596","-73.9847","");
         PersonList.add(Person2);
-        Person Person3 = new Person("34.0727","-118.3729");
+        Person Person3 = new Person("34.0727","-118.3729","");
         PersonList.add(Person3);
 //        Person Person4 = new Person("33.4531","-111.9863");
 //        PersonList.add(Person4);
@@ -185,7 +183,7 @@ public class DurationComputing {
 //        PersonList.add(Person7);
 
         String destination = "32.7974,-96.8256";
-        Group group = new Group(PersonList,destination);
+        Group group = new Group(PersonList);
 
         try {
             ArrayList<String> durationList = getDurationOrDistance(GoogleMapCall(group),"duration");

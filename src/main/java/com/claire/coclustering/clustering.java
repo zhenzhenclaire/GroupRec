@@ -30,14 +30,11 @@ public class clustering {
 
 
     public clustering(){
-        String dir = Config.dataPath + "clustering/";
-        CreateFileUtil.createDir(dir);
-
         userHotelInfo = Config.dataPath + "HotelUserInfo";
-        originalMatrixPath = dir  + "originalMatrix";
-        parsedMatrixPath = dir  + "parsedMatrix";
-        squareMatrixPath = dir  + "squareMatrix";
-        clusteringResult = dir + "clusteringResult";
+        originalMatrixPath = Config.clusteringPath  + "originalMatrix";
+        parsedMatrixPath = Config.clusteringPath  + "parsedMatrix";
+        squareMatrixPath = Config.clusteringPath  + "squareMatrix";
+        clusteringResult = Config.clusteringPath + "clusteringResult";
         userReflectionTable = Config.dataPath  + "userReflectionTable";
         hotelReflectionTable = Config.dataPath  + "hotelReflectionTable";
     }

@@ -5,4 +5,10 @@ package com.claire.util;
  */
 public class Config {
     public static String dataPath = "DataResource/";
+    public static String clusteringPath = dataPath + "clustering/";
+
+//    public Config(){
+//        CreateFileUtil.createDir(clusteringPath);
+//    }
+
 }
