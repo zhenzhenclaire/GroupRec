@@ -2,8 +2,7 @@ package com.claire.gmst;
 
 import com.claire.util.*;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -14,7 +13,7 @@ public class groupMake {
     static Logger logger = Logger.getLogger("groupMake");
     Group group;
     Graph g;
-    int[][] weights;
+    double[][] weights;
 
     private String userReflectionTable = "";
     private String itemReflectionTable = "";
@@ -66,7 +65,7 @@ public class groupMake {
             reader.close();
             logger.info("Finish making hotel mapping.");
 
-            weights = new int[userMapping.size()][itemMapping.size()];
+            weights = new double[userMapping.size()][itemMapping.size()];
 
             logger.info("Start reading rating of user and hotel.");
             reader = new BufferedReader(new FileReader(userItemRatingPath));
@@ -92,13 +91,18 @@ public class groupMake {
 
             //read item location
             logger.info("Start reading location of hotel.");
-            reader = new BufferedReader(new FileReader(hotelLocationPath));
-            line = null;
-            while((line = reader.readLine()) != null){
-                String[] temp = line.split(",");
-                hotelLocation.put(temp[0],temp[5] + "," + temp[6]);
+            File file = new File(hotelLocationPath);
+            File[] files = file.listFiles();
+            for(File f:files){
+                reader = new BufferedReader(new FileReader(f));
+                line = null;
+                while((line = reader.readLine()) != null){
+                    String[] temp = line.split(",");
+                    hotelLocation.put(temp[0],temp[5] + "," + temp[6]);
+                }
+                reader.close();
             }
-            reader.close();
+
             logger.info("Finished reading location of hotel.");
 
             HashSet<UserNode> userNodeSet = new HashSet<UserNode>();
@@ -191,4 +195,112 @@ public class groupMake {
             System.out.println(edge.getUnode().getId() + "---->" + edge.getInode().getId() + ":" + edge.getWeight());
         }
     }
+
+    public void missingValueSupplement(){
+        Map<Integer,Integer> userClass = new HashMap<Integer, Integer>();
+        Map<Integer,Integer> itemClass = new HashMap<Integer, Integer>();
+
+        Map<Integer,HashSet<Integer>> classUsers = new HashMap<Integer, HashSet<Integer>>();
+        Map<Integer,HashSet<Integer>> classItems = new HashMap<Integer, HashSet<Integer>>();
+
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(Config.clusteringResult));
+            String line = "";
+            while((line = reader.readLine()) != null){
+                String[] tmp = line.split(":");
+                if (tmp.length != 3) continue;
+                int id = Integer.parseInt(tmp[1]);
+                int classfi = Integer.parseInt(tmp[2]);
+                if (tmp[0].equals("hotel")){
+                    itemClass.put(id,classfi);
+                    if (classItems.get(classfi) == null){
+                        HashSet<Integer> items = new HashSet<Integer>();
+                        items.add(id);
+                        classItems.put(classfi,items);
+                    }else{
+                        HashSet<Integer> items = classItems.get(classfi);
+                        items.add(id);
+                        classItems.put(classfi,items);
+                    }
+                }else if (tmp[0].equals("user")){
+                    userClass.put(id,classfi);
+                    if (classUsers.get(classfi) == null){
+                        HashSet<Integer> items = new HashSet<Integer>();
+                        items.add(id);
+                        classUsers.put(classfi,items);
+                    }else{
+                        HashSet<Integer> items = classUsers.get(classfi);
+                        items.add(id);
+                        classUsers.put(classfi,items);
+                    }
+                }
+            }
+            reader.close();
+            int x = weights.length;
+            int y = weights[0].length;
+            double[][] weightstmp = new double[x][y];
+            for (int i = 0; i < x;i++){
+                weightstmp[i] = weights[i].clone();
+            }
+            for (int i = 0;i < x ; i++){
+                for (int j = 0;j < y;j++){
+                    if (weights[i][j] != 0) continue;
+                    else{
+                        weights[i][j] = getMissWeight(i,j,weightstmp,userClass,itemClass,classUsers,classItems);
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * get miss value avg(avg(uclass) + avg(iclass))
+     * @param i uid
+     * @param j itemid
+     * @param weightstmp old weights
+     * @param userClass
+     * @param itemClass
+     * @param classUsers
+     * @param classItems
+     * @return
+     */
+    private double getMissWeight(int i, int j, double[][] weightstmp,Map<Integer, Integer> userClass, Map<Integer, Integer> itemClass, Map<Integer, HashSet<Integer>> classUsers, Map<Integer, HashSet<Integer>> classItems) {
+        int uclass = userClass.get(i);
+        HashSet<Integer> users = classUsers.get(uclass);
+        double uscore = 0;
+        int ucount = 0;
+        for (Integer user : users){
+            if (weightstmp[user][j] != 0){
+                uscore += weightstmp[user][j];
+                ucount ++;
+            }
+        }
+
+        int iclass = itemClass.get(j);
+        HashSet<Integer> items = classItems.get(iclass);
+        double iscore = 0;
+        int icount = 0;
+        for (Integer item : items){
+            if (weightstmp[i][item] != 0){
+                iscore += weightstmp[i][item];
+                icount++;
+            }
+        }
+        if (ucount != 0 && icount != 0){
+            return (uscore/ucount + iscore/icount)/2;
+        }else if (ucount != 0 && icount == 0){
+            return uscore/ucount;
+        }else if (ucount == 0 && icount != 0){
+            return iscore/icount;
+        }else{
+            return 0;
+        }
+
+    }
+
 }

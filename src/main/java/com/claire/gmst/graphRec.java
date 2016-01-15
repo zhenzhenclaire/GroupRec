@@ -13,10 +13,11 @@ import java.util.Map;
  */
 public class graphRec {
     Group group;
-    String userReflectionTable = Config.dataPath + "userReflectionTable";
-    String itemReflectionTable = Config.dataPath + "hotelReflectionTable";
-    String userItemRatingPath = Config.clusteringPath + "parsedMatrix";
-    String hotelLocationPath = Config.dataPath + "HotelUserInfo/part-00000";
+    String userReflectionTable;
+    String itemReflectionTable;
+    String userItemRatingPath;
+    String hotelLocationPath;
+
     Map<Integer,String> userMapping = new HashMap<Integer, String>();//
     Map<Integer,String> itemMapping = new HashMap<Integer, String>();
     Map<Integer,String> userItems = new HashMap<Integer, String>();
@@ -27,15 +28,22 @@ public class graphRec {
     int[][] durationMatrix;
 
     public graphRec(Group group) {
+        userReflectionTable = Config.userReflectionTable;
+        itemReflectionTable = Config.hotelReflectionTable;
+        userItemRatingPath = Config.parsedMatrixPath;
+        hotelLocationPath = Config.userHotelInfo;
         this.group = group;
     }
 
     public void makeGroup(){
+
         groupMake gMake = new groupMake(group,userReflectionTable,itemReflectionTable,userItemRatingPath,hotelLocationPath);
         gMake.makeGraph();
     }
 
     public static void main(String[] args){
+        Config.init();
+
         ArrayList<Person> PersonList = new ArrayList<Person>();
 
         Person Person1 = new Person("13119","40.7575","-73.9700");

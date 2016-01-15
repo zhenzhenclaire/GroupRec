@@ -2,6 +2,7 @@ package com.claire.analysis;
 
 import com.claire.util.Config;
 import com.claire.util.SequenceFileReader;
+import org.apache.commons.el.IntegerLiteral;
 import org.apache.hadoop.hdfs.DFSClient;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.mahout.clustering.spectral.kmeans.SpectralKMeansDriver;
@@ -78,7 +79,16 @@ public class SpectralClustering {
                 //logger.info(tempString);
                 if(tempString.contains("<===>")){
                     String[] contents = tempString.split("<===>");
-                    writer.write(lineNum + ":" + contents[0].trim());
+                    int id = lineNum;
+                    String type = contents[0].trim();
+
+                    if(id < Config.numOfHotels){
+                        writer.write("hotel:" + id + ":" + type);
+                    }
+                    else{
+                        writer.write("user:" + (id - Config.numOfHotels) + ":" + type);
+                    }
+
                     writer.newLine();
                     lineNum++;
                     }

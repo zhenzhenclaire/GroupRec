@@ -30,13 +30,13 @@ public class clustering {
 
 
     public clustering(){
-        userHotelInfo = Config.dataPath + "HotelUserInfo";
-        originalMatrixPath = Config.clusteringPath  + "originalMatrix";
-        parsedMatrixPath = Config.clusteringPath  + "parsedMatrix";
-        squareMatrixPath = Config.clusteringPath  + "squareMatrix";
-        clusteringResult = Config.clusteringPath + "clusteringResult";
-        userReflectionTable = Config.dataPath  + "userReflectionTable";
-        hotelReflectionTable = Config.dataPath  + "hotelReflectionTable";
+        userHotelInfo = Config.userHotelInfo;
+        originalMatrixPath = Config.originalMatrixPath;
+        parsedMatrixPath = Config.parsedMatrixPath;
+        squareMatrixPath = Config.squareMatrixPath;
+        clusteringResult = Config.clusteringResult;
+        userReflectionTable = Config.userReflectionTable;
+        hotelReflectionTable = Config.hotelReflectionTable;
     }
     public void prepareClustering(){
         try {
@@ -52,6 +52,7 @@ public class clustering {
 
         ReflectMatrix rm = new ReflectMatrix(originalMatrixPath, parsedMatrixPath, squareMatrixPath, userReflectionTable, hotelReflectionTable);
         rm.readMatrix();
+
         try {
             rm.makeAdjacencyMatrix();
         } catch (IOException e) {
@@ -84,6 +85,7 @@ public class clustering {
     }
 
     public static void main(String args[]){
+        Config.init();
         clustering cl = new clustering();
         cl.prepareClustering();
         cl.coClustering(40025,20,5);

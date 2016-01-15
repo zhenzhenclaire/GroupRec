@@ -1,9 +1,12 @@
 package com.claire.preprocessing;
 
+import com.claire.util.Config;
+
 import javax.swing.text.html.parser.Entity;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
@@ -44,6 +47,14 @@ public class ReflectMatrix {
         this.hotelReflectionTable = hotelReflectionTable;
     }
 
+    public int getNumOfUsers() {
+        return numOfUsers;
+    }
+
+    public int getNumOfHotels() {
+        return numOfHotels;
+    }
+
     /**
      * Read original matrix and reflect it using reflection tables
      */
@@ -78,10 +89,13 @@ public class ReflectMatrix {
             writer.close();
 
             numOfHotels = hotelMap.size();
+
             logger.info("Num of hotels: " + numOfHotels);
+            Config.numOfHotels = numOfHotels;
 
             numOfUsers = userMap.size();
             logger.info("Num of users: " + numOfUsers);
+            Config.numOfUsers = numOfUsers;
 
             writeReflection(userMap,userReflectionTable);
             writeReflection(hotelMap,hotelReflectionTable);
