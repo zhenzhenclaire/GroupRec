@@ -18,8 +18,11 @@ public class Config {
     public static String clusteringResult;
     public static String userReflectionTable;
     public static String hotelReflectionTable;
-    public static int numOfUsers;
-    public static int numOfHotels;
+    public static String ratingModel;
+    public static String mergedUser;
+    public static String mergedHotel;
+    public static int numOfUsers = 392;
+    public static int numOfHotels = 39633;
 
     public static String filePath = "conf/config.properties";
 
@@ -51,6 +54,9 @@ public class Config {
         clusteringResult = clusteringPath + properties.getProperty("clusteringResult");
         userReflectionTable = dataPath + properties.getProperty("userReflectionTable");
         hotelReflectionTable = dataPath + properties.getProperty("hotelReflectionTable");
+        ratingModel = dataPath + properties.getProperty("ratingModel");
+        mergedHotel = clusteringPath + properties.getProperty("mergedHotel");
+        mergedUser = clusteringPath + properties.getProperty("mergedUser");
     }
 
 

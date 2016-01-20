@@ -35,26 +35,37 @@ public class groupMake {
         g = new Graph();
     }
 
-    private void initBaseData() {
-        logger.info("Start initing base data.");
+    /**
+     * Make user mapping and hotel mapping and location mapping
+     */
+    private  void makeMapping(){
+        //Make user mapping
+        BufferedReader reader = null;
+        String line = null;
+        logger.info("Start making user mapping. Reading from" + userReflectionTable);
         try {
-            logger.info("Start making user mapping. Reading from" + userReflectionTable);
-            BufferedReader reader = new BufferedReader(new FileReader(userReflectionTable));
 
-            String line = null;
+            reader = new BufferedReader(new FileReader(userReflectionTable));
+
             while((line = reader.readLine()) != null){
                 String[] temp = line.split(" ");
                 if (temp.length != 2) continue;
                 else{
                     userMapping.put(Integer.parseInt(temp[0]),temp[1]);
                 }
-
             }
             reader.close();
             logger.info("Finish making user mapping.");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            logger.info("Start making hotel mapping.");
-            //read user mapping
+
+        logger.info("Start making hotel mapping.");
+        //read user mapping
+        try {
             reader = new BufferedReader(new FileReader(itemReflectionTable));
             line = null;
             while((line = reader.readLine()) != null){
@@ -65,11 +76,43 @@ public class groupMake {
             reader.close();
             logger.info("Finish making hotel mapping.");
 
-            weights = new double[userMapping.size()][itemMapping.size()];
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            logger.info("Start reading rating of user and hotel.");
+        //read item location
+        logger.info("Start reading location of hotel.");
+        File file = new File(hotelLocationPath);
+        File[] files = file.listFiles();
+        for(File f:files){
+            try {
+                reader = new BufferedReader(new FileReader(f));
+                line = null;
+                while((line = reader.readLine()) != null){
+                    String[] temp = line.split(",");
+                    hotelLocation.put(temp[0],temp[5] + "," + temp[6]);
+                }
+                reader.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        logger.info("Finished reading location of hotel.");
+
+    }
+
+    private void initializeWeightsByRating(){
+        BufferedReader reader = null;
+        String line = null;
+
+        logger.info("Start reading rating of user and hotel.");
+        try {
             reader = new BufferedReader(new FileReader(userItemRatingPath));
-            line = null;
+
             while((line = reader.readLine()) != null){
                 String[] temp = line.split(",");
                 if (temp.length != 3)continue;
@@ -87,24 +130,28 @@ public class groupMake {
                 }
             }
             reader.close();
-            logger.info("Finished reading rating of user and hotel.");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        logger.info("Finished reading rating of user and hotel.");
+    }
 
-            //read item location
-            logger.info("Start reading location of hotel.");
-            File file = new File(hotelLocationPath);
-            File[] files = file.listFiles();
-            for(File f:files){
-                reader = new BufferedReader(new FileReader(f));
-                line = null;
-                while((line = reader.readLine()) != null){
-                    String[] temp = line.split(",");
-                    hotelLocation.put(temp[0],temp[5] + "," + temp[6]);
-                }
-                reader.close();
-            }
 
-            logger.info("Finished reading location of hotel.");
 
+    private void initBaseData() {
+        logger.info("Start initing base data.");
+        try {
+            makeMapping();
+
+            weights = new double[userMapping.size()][itemMapping.size()];
+
+            initializeWeightsByRating();
+
+            missingValueSupplement();
+
+            // Create user nodes and add them to graph
             HashSet<UserNode> userNodeSet = new HashSet<UserNode>();
             for(Person p : group.getGroup()){
                 int id = Integer.parseInt(p.getUserID());
@@ -147,7 +194,9 @@ public class groupMake {
             return false;
     }
 
-
+    /**
+     * Make original graph
+     */
     public void makeGraph(){
         logger.info("Start making graph.");
         this.initBaseData();
@@ -174,6 +223,7 @@ public class groupMake {
         }
 
         System.out.println("----------------------------------------");
+
         // Add weight(rating part) to edges
         for (UserNode unode : g.getUserNodes()){
             //logger.info("user " + unode.getId() + ",location" + unode.getLocation() + ",name" + unode.getName());
@@ -196,13 +246,17 @@ public class groupMake {
         }
     }
 
+
+    /**
+     * Implement missing value from co-clustering
+     */
     public void missingValueSupplement(){
+        logger.info("Start calculating missing value.");
         Map<Integer,Integer> userClass = new HashMap<Integer, Integer>();
         Map<Integer,Integer> itemClass = new HashMap<Integer, Integer>();
 
         Map<Integer,HashSet<Integer>> classUsers = new HashMap<Integer, HashSet<Integer>>();
         Map<Integer,HashSet<Integer>> classItems = new HashMap<Integer, HashSet<Integer>>();
-
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(Config.clusteringResult));
@@ -237,6 +291,12 @@ public class groupMake {
                 }
             }
             reader.close();
+
+            // Add weights(calculated from co-clustering) parts to original weights matrix
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(Config.ratingModel));
+
+            logger.info("Started adding weights to weight matrix.");
             int x = weights.length;
             int y = weights[0].length;
             double[][] weightstmp = new double[x][y];
@@ -249,17 +309,24 @@ public class groupMake {
                     else{
                         weights[i][j] = getMissWeight(i,j,weightstmp,userClass,itemClass,classUsers,classItems);
                     }
+                    writer.write(i + "," + j + ":" + weights[i][j]);
+                    writer.newLine();
+                    //System.out.println(i + "," + j + ":" + weights[i][j]);
                 }
             }
+            writer.flush();
+            writer.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        logger.info("Finished filling up massing value to matrix.");
     }
 
     /**
-     * get miss value avg(avg(uclass) + avg(iclass))
+     * Cget miss value avg(avg(uclass) + avg(iclass))
      * @param i uid
      * @param j itemid
      * @param weightstmp old weights
@@ -269,7 +336,7 @@ public class groupMake {
      * @param classItems
      * @return
      */
-    private double getMissWeight(int i, int j, double[][] weightstmp,Map<Integer, Integer> userClass, Map<Integer, Integer> itemClass, Map<Integer, HashSet<Integer>> classUsers, Map<Integer, HashSet<Integer>> classItems) {
+    private double getMissWeight(int i, int j, double[][] weightstmp, Map<Integer, Integer> userClass, Map<Integer, Integer> itemClass, Map<Integer, HashSet<Integer>> classUsers, Map<Integer, HashSet<Integer>> classItems) {
         int uclass = userClass.get(i);
         HashSet<Integer> users = classUsers.get(uclass);
         double uscore = 0;
@@ -300,7 +367,5 @@ public class groupMake {
         }else{
             return 0;
         }
-
     }
-
 }
