@@ -1,7 +1,5 @@
 package com.claire.util;
 
-import jdk.internal.util.xml.impl.Input;
-
 import java.io.*;
 import java.util.Properties;
 
@@ -21,8 +19,8 @@ public class Config {
     public static String ratingModel;
     public static String mergedUser;
     public static String mergedHotel;
-    public static int numOfUsers = 392;
-    public static int numOfHotels = 39633;
+    public static int numOfUsers = 39633;
+    public static int numOfHotels = 392;
 
     public static String filePath = "conf/config.properties";
 
@@ -37,6 +35,7 @@ public class Config {
     }
 
     public static void init(){
+        System.out.println("init");
         Properties properties = new Properties();
 
         try {
