@@ -9,6 +9,9 @@ public class UserNode {
     private String location = null;
     private int id = 0;
 
+    public UserNode(){
+
+    }
     public UserNode(String name, String location, int id) {
         this.name = name;
         this.location = location;

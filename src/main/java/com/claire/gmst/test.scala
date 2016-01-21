@@ -1,5 +1,6 @@
 package com.claire.gmst
 
+import com.claire.gmst.preferenceCal
 import com.claire.util.Config
 
 /**
@@ -9,8 +10,8 @@ object test {
 
   def main(args: Array[String]) {
     Config.init
-    val weightcal : weightCal = new weightCal
-    weightcal.init()
+    val preferenceCal : preferenceCal = new preferenceCal
+    preferenceCal.init()
   }
 
 }

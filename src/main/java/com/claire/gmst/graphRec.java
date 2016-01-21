@@ -1,9 +1,12 @@
 package com.claire.gmst;
 
-import com.claire.util.Config;
-import com.claire.util.Group;
-import com.claire.util.Person;
+import com.claire.util.*;
+import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,32 +16,49 @@ import java.util.Map;
  */
 public class graphRec {
     Group group;
-    String userReflectionTable;
-    String itemReflectionTable;
     String userItemRatingPath;
     String hotelLocationPath;
+    String ratingModel;
 
-    Map<Integer,String> userMapping = new HashMap<Integer, String>();//
-    Map<Integer,String> itemMapping = new HashMap<Integer, String>();
-    Map<Integer,String> userItems = new HashMap<Integer, String>();
-
-    Map<String,String> hotelLocation = new HashMap<String, String>();
+    ArrayList<ItemNode> hotelNodeList;
+    ArrayList<UserNode> userNodeList;
 
     int[][] ratingMatrix; //Preference matrix (user item rating)
     int[][] durationMatrix;
 
     public graphRec(Group group) {
-        userReflectionTable = Config.userReflectionTable;
-        itemReflectionTable = Config.hotelReflectionTable;
         userItemRatingPath = Config.parsedMatrixPath;
         hotelLocationPath = Config.userHotelInfo;
+        ratingModel = Config.ratingModel;
         this.group = group;
     }
 
-    public void makeGroup(){
+    public void findAllHotels(){
+        int i = 0;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(ratingModel));
+            String line = "";
+            while((line = reader.readLine()) != null){
 
-        groupMake gMake = new groupMake(group,userReflectionTable,itemReflectionTable,userItemRatingPath,hotelLocationPath);
-        gMake.makeGraph();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void addUserNodes(){
+        int i = 0;
+        for(Person p:group.getGroup()){
+            UserNode uNode = new UserNode();
+            uNode.setId(i);
+            uNode.setLocation(p.getLatitude() + "," + p.getLongitude());
+            uNode.setName(p.getUserID());
+            i++;
+            userNodeList.add(uNode);
+        }
     }
 
     public static void main(String[] args){
@@ -64,7 +84,7 @@ public class graphRec {
         String destination = "32.7974,-96.8256";
         Group group = new Group(PersonList);
 
-        graphRec gRec = new graphRec(group);
-        gRec.makeGroup();
+//        graphRec gRec = new graphRec(group);
+//        gRec.makeGroup();
     }
 }

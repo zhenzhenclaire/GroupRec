@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 /**
  * Created by claire on 1/11/16.
  */
-public class groupMake {
-    static Logger logger = Logger.getLogger("groupMake");
+public class groupMakeJava {
+    static Logger logger = Logger.getLogger("groupMakeJava");
     Group group;
     Graph g;
     double[][] weights;
@@ -26,7 +26,7 @@ public class groupMake {
     private Map<String,String> hotelLocation = new HashMap<String, String>();
 
 
-    public groupMake(Group group, String userReflectionTable, String itemReflectionTable, String userItemRatingPath, String hotelLocationPath) {
+    public groupMakeJava(Group group, String userReflectionTable, String itemReflectionTable, String userItemRatingPath, String hotelLocationPath) {
         this.group = group;
         this.userReflectionTable = userReflectionTable;
         this.itemReflectionTable = itemReflectionTable;

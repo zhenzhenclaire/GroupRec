@@ -62,7 +62,7 @@ public class clustering {
     }
 
     public void coClustering(int numDims, int clusters, int maxIterations){
-        SpectralClustering sc = new SpectralClustering(squareMatrixPath,clusteringResult,40025,20,100);
+        SpectralClustering sc = new SpectralClustering(squareMatrixPath,clusteringResult,numDims,clusters,maxIterations);
 
 //        //RedirectConsole
 //        PrintStream ps= null;
@@ -88,7 +88,7 @@ public class clustering {
         Config.init();
         clustering cl = new clustering();
         cl.prepareClustering();
-        cl.coClustering(40025,20,5);
+        cl.coClustering(40025,20,10000);
     }
 
 }
