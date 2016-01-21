@@ -4,6 +4,9 @@ import com.claire.util.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 /**
@@ -252,11 +255,11 @@ public class groupMakeJava {
      */
     public void missingValueSupplement(){
         logger.info("Start calculating missing value.");
-        Map<Integer,Integer> userClass = new HashMap<Integer, Integer>();
-        Map<Integer,Integer> itemClass = new HashMap<Integer, Integer>();
+        final Map<Integer,Integer> userClass = new HashMap<Integer, Integer>();
+        final Map<Integer,Integer> itemClass = new HashMap<Integer, Integer>();
 
-        Map<Integer,HashSet<Integer>> classUsers = new HashMap<Integer, HashSet<Integer>>();
-        Map<Integer,HashSet<Integer>> classItems = new HashMap<Integer, HashSet<Integer>>();
+        final Map<Integer,HashSet<Integer>> classUsers = new HashMap<Integer, HashSet<Integer>>();
+        final Map<Integer,HashSet<Integer>> classItems = new HashMap<Integer, HashSet<Integer>>();
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(Config.clusteringResult));
@@ -294,26 +297,66 @@ public class groupMakeJava {
 
             // Add weights(calculated from co-clustering) parts to original weights matrix
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(Config.ratingModel));
+            final BufferedWriter writer = new BufferedWriter(new FileWriter(Config.ratingModel));
+
+            ThreadPoolExecutor executor = new ThreadPoolExecutor(300,600,200, TimeUnit.MILLISECONDS,
+                    new ArrayBlockingQueue<Runnable>(10000),new ThreadPoolExecutor.CallerRunsPolicy() );
+
+            ArrayList<Person> groupp = group.getGroup();
+            Set<Integer> userids = new HashSet<Integer>();
+            for (Person p : groupp){
+                userids.add(Integer.parseInt(p.getUserID()));
+            }
 
             logger.info("Started adding weights to weight matrix.");
             int x = weights.length;
             int y = weights[0].length;
-            double[][] weightstmp = new double[x][y];
+            final double[][] weightstmp = new double[x][y];
             for (int i = 0; i < x;i++){
                 weightstmp[i] = weights[i].clone();
             }
+            Long startTime = System.currentTimeMillis();
             for (int i = 0;i < x ; i++){
+                if (!userids.contains(i))continue;
                 for (int j = 0;j < y;j++){
                     if (weights[i][j] != 0) continue;
                     else{
-                        weights[i][j] = getMissWeight(i,j,weightstmp,userClass,itemClass,classUsers,classItems);
+//                        Long startTime = System.currentTimeMillis();
+                        final int finalI = i;
+                        final int finalJ = j;
+                        executor.execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                weights[finalI][finalJ] = getMissWeight(finalI, finalJ,weightstmp,userClass,itemClass,classUsers,classItems);
+                                synchronized (writer) {
+                                    try {
+                                        writer.write(finalI + "," + finalJ + ":" + weights[finalI][finalJ]);
+                                        writer.newLine();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        });
+//                        weights[i][j] = getMissWeight(i,j,weightstmp,userClass,itemClass,classUsers,classItems);
+//                        Long endTime = System.currentTimeMillis();
+//                        System.out.println("------------" + (endTime - startTime));
                     }
-                    writer.write(i + "," + j + ":" + weights[i][j]);
-                    writer.newLine();
+//                    writer.write(i + "," + j + ":" + weights[i][j]);
+//                    writer.newLine();
                     //System.out.println(i + "," + j + ":" + weights[i][j]);
                 }
             }
+            Long endTime = System.currentTimeMillis();
+            System.out.println("------------" + (endTime - startTime));
+            while(executor.getActiveCount() != 0){
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            executor.shutdownNow();
             writer.flush();
             writer.close();
         } catch (FileNotFoundException e) {

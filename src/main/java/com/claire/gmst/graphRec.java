@@ -19,6 +19,8 @@ public class graphRec {
     String userItemRatingPath;
     String hotelLocationPath;
     String ratingModel;
+    String userReflectionTable;
+    String itemReflectionTable;
 
     ArrayList<ItemNode> hotelNodeList;
     ArrayList<UserNode> userNodeList;
@@ -31,6 +33,8 @@ public class graphRec {
         hotelLocationPath = Config.userHotelInfo;
         ratingModel = Config.ratingModel;
         this.group = group;
+        userReflectionTable = Config.userReflectionTable;
+        itemReflectionTable = Config.hotelReflectionTable;
     }
 
     public void findAllHotels(){
@@ -61,6 +65,10 @@ public class graphRec {
         }
     }
 
+    public void makeGroup(){
+        groupMakeJava groupMake = new groupMakeJava(group,userReflectionTable, itemReflectionTable, userItemRatingPath, hotelLocationPath);
+        groupMake.makeGraph();
+    }
     public static void main(String[] args){
         Config.init();
 
@@ -84,7 +92,7 @@ public class graphRec {
         String destination = "32.7974,-96.8256";
         Group group = new Group(PersonList);
 
-//        graphRec gRec = new graphRec(group);
-//        gRec.makeGroup();
+        graphRec gRec = new graphRec(group);
+        gRec.makeGroup();
     }
 }
