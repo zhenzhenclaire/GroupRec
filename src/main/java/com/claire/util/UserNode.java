@@ -41,4 +41,16 @@ public class UserNode {
     public void setLocation(String location) {
         this.location = location;
     }
+
+    public int hashCode(){
+        return new Integer(this.getId()).hashCode();
+    }
+
+    @Override
+    public boolean equals(Object st)
+    {
+        UserNode unode= (UserNode) st;
+        if (this.getId() == unode.getId()) return true;
+        else return false;
+    }
 }

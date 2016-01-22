@@ -37,4 +37,16 @@ public class Edge {
     public void setWeight(double weight) {
         this.weight = weight;
     }
+
+    public int hashCode(){
+        return (unode.getId() + ":" + inode.getId()).hashCode();
+    }
+
+    @Override
+    public boolean equals(Object st)
+    {
+        Edge edge= (Edge) st;
+        if (unode.getId() == edge.getUnode().getId() && inode.getId() == edge.getInode().getId()) return true;
+        else return false;
+    }
 }

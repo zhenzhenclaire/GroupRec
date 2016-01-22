@@ -1,6 +1,9 @@
 package com.claire.gmst;
 
+import com.claire.preprocessing.DurationComputing;
 import com.claire.util.*;
+import org.apache.hadoop.hdfs.DFSClient;
+import org.apache.hadoop.yarn.util.SystemClock;
 
 import java.io.*;
 import java.util.*;
@@ -17,95 +20,14 @@ public class groupMakeJava {
     Group group;
     Graph g;
     double[][] weights;
-
-    private String userReflectionTable = "";
-    private String itemReflectionTable = "";
-    private String userItemRatingPath = "";
-    private String hotelLocationPath = "";
-    private Map<Integer,String> userMapping = new HashMap<Integer, String>();//
-    private Map<Integer,String> itemMapping = new HashMap<Integer, String>();
+    ReflectionMap reflection = new ReflectionMap();
+    private String userItemRatingPath;
     private Map<Integer,String> userItems = new HashMap<Integer, String>();
 
-    private Map<String,String> hotelLocation = new HashMap<String, String>();
-
-
-    public groupMakeJava(Group group, String userReflectionTable, String itemReflectionTable, String userItemRatingPath, String hotelLocationPath) {
+    public groupMakeJava(Group group) {
         this.group = group;
-        this.userReflectionTable = userReflectionTable;
-        this.itemReflectionTable = itemReflectionTable;
-        this.userItemRatingPath = userItemRatingPath;
-        this.hotelLocationPath = hotelLocationPath;
         g = new Graph();
-    }
-
-    /**
-     * Make user mapping and hotel mapping and location mapping
-     */
-    private  void makeMapping(){
-        //Make user mapping
-        BufferedReader reader = null;
-        String line = null;
-        logger.info("Start making user mapping. Reading from" + userReflectionTable);
-        try {
-
-            reader = new BufferedReader(new FileReader(userReflectionTable));
-
-            while((line = reader.readLine()) != null){
-                String[] temp = line.split(" ");
-                if (temp.length != 2) continue;
-                else{
-                    userMapping.put(Integer.parseInt(temp[0]),temp[1]);
-                }
-            }
-            reader.close();
-            logger.info("Finish making user mapping.");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-        logger.info("Start making hotel mapping.");
-        //read user mapping
-        try {
-            reader = new BufferedReader(new FileReader(itemReflectionTable));
-            line = null;
-            while((line = reader.readLine()) != null){
-                String[] temp = line.split(" ");
-                if (temp.length != 2)continue;
-                itemMapping.put(Integer.parseInt(temp[0]),temp[1]);
-            }
-            reader.close();
-            logger.info("Finish making hotel mapping.");
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        //read item location
-        logger.info("Start reading location of hotel.");
-        File file = new File(hotelLocationPath);
-        File[] files = file.listFiles();
-        for(File f:files){
-            try {
-                reader = new BufferedReader(new FileReader(f));
-                line = null;
-                while((line = reader.readLine()) != null){
-                    String[] temp = line.split(",");
-                    hotelLocation.put(temp[0],temp[5] + "," + temp[6]);
-                }
-                reader.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        logger.info("Finished reading location of hotel.");
-
+        userItemRatingPath = Config.parsedMatrixPath;
     }
 
     private void initializeWeightsByRating(){
@@ -141,14 +63,10 @@ public class groupMakeJava {
         logger.info("Finished reading rating of user and hotel.");
     }
 
-
-
     private void initBaseData() {
         logger.info("Start initing base data.");
         try {
-            makeMapping();
-
-            weights = new double[userMapping.size()][itemMapping.size()];
+            weights = new double[Config.numOfUsers][Config.numOfHotels];
 
             initializeWeightsByRating();
 
@@ -156,15 +74,16 @@ public class groupMakeJava {
 
             // Create user nodes and add them to graph
             HashSet<UserNode> userNodeSet = new HashSet<UserNode>();
+
             for(Person p : group.getGroup()){
                 int id = Integer.parseInt(p.getUserID());
-                String name = userMapping.get(id);
+                String name =  reflection.findUserNameById(id);
                 String location = p.getLatitude() + "," + p.getLongitude();
 
                 UserNode unode = new UserNode(name,location,id);
-                logger.info("user " + unode.getId() + ",location" + unode.getLocation() + ",name" + unode.getName());
+                //logger.info("user " + unode.getId() + ",location" + unode.getLocation() + ",name" + unode.getName());
                 userNodeSet.add(unode);
-                logger.info(userNodeSet.size() + "");
+                //logger.info(userNodeSet.size() + "");
             }
             g.setUserNodes(userNodeSet);
 
@@ -190,15 +109,8 @@ public class groupMakeJava {
         return result;
     }
 
-    public boolean isUserItemConnected(UserNode userNode, ItemNode itemNode){
-        if(weights[itemNode.getId()][userNode.getId()] != 0)
-            return true;
-        else
-            return false;
-    }
-
     /**
-     * Make original graph
+     * Make graph
      */
     public void makeGraph(){
         logger.info("Start making graph.");
@@ -208,11 +120,10 @@ public class groupMakeJava {
             String items = userItems.get(node.getId());
             logger.info(items);
 
-
             for (String hotel : items.split(",")){
                 int id = Integer.parseInt(hotel);
-                String name = itemMapping.get(id);
-                String location = hotelLocation.get(name);
+                String name = reflection.findItemNameById(id);
+                String location = reflection.findLocationByID(name);
                 ItemNode hotelNode = new ItemNode(id,name,location);
                 g.getItemNodes().add(hotelNode);
                 Edge edge = new Edge(node,hotelNode,getWeights(node,hotelNode));
@@ -225,9 +136,9 @@ public class groupMakeJava {
             System.out.println(edge.getUnode().getId() + "---->" + edge.getInode().getId() + ":" + edge.getWeight());
         }
 
-        System.out.println("----------------------------------------");
+        System.out.println("----------------------------------------" + edges.size());
 
-        // Add weight(rating part) to edges
+        // Fill up the graph
         for (UserNode unode : g.getUserNodes()){
             //logger.info("user " + unode.getId() + ",location" + unode.getLocation() + ",name" + unode.getName());
 
@@ -245,15 +156,16 @@ public class groupMakeJava {
 
         edges = g.getEdges();
         for (Edge edge : edges){
-            System.out.println(edge.getUnode().getId() + "---->" + edge.getInode().getId() + ":" + edge.getWeight());
+            System.out.println(edge.getUnode().getName() + "---->" + edge.getInode().getName() + ":" + edge.getWeight());
         }
-    }
 
+        System.out.println("users:" + g.getUserNodes().size() + "items:" + g.getItemNodes().size() + "edges:" + edges.size());
+    }
 
     /**
      * Implement missing value from co-clustering
      */
-    public void missingValueSupplement(){
+    private void missingValueSupplement(){
         logger.info("Start calculating missing value.");
         final Map<Integer,Integer> userClass = new HashMap<Integer, Integer>();
         final Map<Integer,Integer> itemClass = new HashMap<Integer, Integer>();
@@ -367,6 +279,26 @@ public class groupMakeJava {
 
         logger.info("Finished filling up massing value to matrix.");
     }
+
+    private ArrayList<String> getDurationToOneDestination(ItemNode iNode){
+        DurationComputing duration = new DurationComputing();
+        ArrayList<String> durationList = null;
+        try {
+            durationList = duration.getDurationOrDistance(duration.GoogleMapCall(group,iNode.getLocation()),"duration");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for(int i = 0;i < durationList.size();i++){
+            logger.info("Person" + i + ":" + durationList.get(i));
+        }
+        return durationList;
+    }
+
+    private void initializeWeightsByDistance(){
+
+    }
+
+
 
     /**
      * Cget miss value avg(avg(uclass) + avg(iclass))

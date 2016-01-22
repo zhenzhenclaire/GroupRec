@@ -30,7 +30,7 @@ public class DurationComputing {
      * @param type  distance or duration
      * @return  distance(duration) list of the group
      */
-    public static ArrayList<String> getDurationOrDistance(JSONObject resultJSON, String type){
+    public ArrayList<String> getDurationOrDistance(JSONObject resultJSON, String type){
         ArrayList<String> durationList = new ArrayList<String>();
         ArrayList<String> distanceList = new ArrayList<String>();
         JSONArray ja = resultJSON.getJSONArray("rows");
@@ -66,7 +66,7 @@ public class DurationComputing {
      * @return  JSONObject of GoogleMap API
      * @throws Exception
      */
-    public static JSONObject GoogleMapCall(Group group) throws Exception {
+    public JSONObject GoogleMapCall(Group group, String destinationAd) throws Exception {
         //URL to get the distance
         //https://maps.googleapis.com/maps/api/distancematrix/output?parameters
 
@@ -79,7 +79,7 @@ public class DurationComputing {
         String origin = group.makeOriginURL();
         origin = java.net.URLEncoder.encode(origin, "utf-8");
 
-        String destination = group.destinationAd;
+        String destination = destinationAd;
         destination = java.net.URLEncoder.encode(destination, "utf-8");
 
         String baseURL = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=oriGPS&destinations=desGPS&language=en";
@@ -137,7 +137,7 @@ public class DurationComputing {
      * @param response
      * @return the response body
      */
-    public static String returnResponseBody(HttpResponse response) {
+    public String returnResponseBody(HttpResponse response) {
         String result = "";
         HttpEntity entity = response.getEntity();
         if (entity == null) result = "";
@@ -184,9 +184,9 @@ public class DurationComputing {
 
         String destination = "32.7974,-96.8256";
         Group group = new Group(PersonList);
-
+        DurationComputing dComp = new DurationComputing();
         try {
-            ArrayList<String> durationList = getDurationOrDistance(GoogleMapCall(group),"duration");
+            ArrayList<String> durationList = dComp.getDurationOrDistance(dComp.GoogleMapCall(group,destination),"duration");
             for(int i = 0;i < durationList.size();i++){
                 logger.info("Person" + i + ":" + durationList.get(i));
             }

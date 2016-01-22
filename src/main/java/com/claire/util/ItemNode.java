@@ -37,4 +37,16 @@ public class ItemNode {
     public void setLocation(String location) {
         this.location = location;
     }
+
+    public int hashCode(){
+        return new Integer(this.getId()).hashCode();
+    }
+
+    @Override
+    public boolean equals(Object st)
+    {
+        ItemNode inode= (ItemNode) st;
+        if (this.getId() == inode.getId()) return true;
+        else return false;
+    }
 }

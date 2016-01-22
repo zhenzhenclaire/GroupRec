@@ -37,36 +37,9 @@ public class graphRec {
         itemReflectionTable = Config.hotelReflectionTable;
     }
 
-    public void findAllHotels(){
-        int i = 0;
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(ratingModel));
-            String line = "";
-            while((line = reader.readLine()) != null){
-
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void addUserNodes(){
-        int i = 0;
-        for(Person p:group.getGroup()){
-            UserNode uNode = new UserNode();
-            uNode.setId(i);
-            uNode.setLocation(p.getLatitude() + "," + p.getLongitude());
-            uNode.setName(p.getUserID());
-            i++;
-            userNodeList.add(uNode);
-        }
-    }
 
     public void makeGroup(){
-        groupMakeJava groupMake = new groupMakeJava(group,userReflectionTable, itemReflectionTable, userItemRatingPath, hotelLocationPath);
+        groupMakeJava groupMake = new groupMakeJava(group);
         groupMake.makeGraph();
     }
     public static void main(String[] args){
