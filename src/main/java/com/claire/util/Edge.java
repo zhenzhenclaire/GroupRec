@@ -8,6 +8,9 @@ public class Edge {
     ItemNode inode;
     double weight;
     double duration;
+    double normalizedWeight;
+    double normalizedDuration;
+    double combinedWeight;
 
     public Edge(UserNode unode, ItemNode inode) {
         this.unode = unode;
@@ -18,6 +21,30 @@ public class Edge {
         this.unode = unode;
         this.inode = inode;
         this.weight = weight;
+    }
+
+    public double getNormalizedDuration() {
+        return normalizedDuration;
+    }
+
+    public void setNormalizedDuration(double normalizedDuration) {
+        this.normalizedDuration = normalizedDuration;
+    }
+
+    public double getNormalizedWeight() {
+        return normalizedWeight;
+    }
+
+    public void setNormalizedWeight(double normalizedWeight) {
+        this.normalizedWeight = normalizedWeight;
+    }
+
+    public double getCombinedWeight() {
+        return combinedWeight;
+    }
+
+    public void setCombinedWeight(double combinedWeight) {
+        this.combinedWeight = combinedWeight;
     }
 
     public UserNode getUnode() {

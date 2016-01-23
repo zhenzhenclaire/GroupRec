@@ -21,7 +21,8 @@ public class Config {
     public static String mergedHotel;
     public static int numOfUsers = 39633;
     public static int numOfHotels = 392;
-
+    public static double alpha;
+    public static int maxRating;
     public static String filePath = "conf/config.properties";
 
     public static void writeToProperty(){
@@ -56,6 +57,8 @@ public class Config {
         ratingModel = dataPath + properties.getProperty("ratingModel");
         mergedHotel = clusteringPath + properties.getProperty("mergedHotel");
         mergedUser = clusteringPath + properties.getProperty("mergedUser");
+        alpha = Double.parseDouble(properties.getProperty("alpha","0.5"));
+        maxRating = Integer.parseInt(properties.getProperty("maxRating","5"));
     }
 
 
