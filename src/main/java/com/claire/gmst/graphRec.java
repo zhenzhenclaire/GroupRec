@@ -39,8 +39,17 @@ public class graphRec {
 
 
     public void makeGroup(){
-        groupMakeJava groupMake = new groupMakeJava(group);
+        GroupMake groupMake = new GroupMake(group);
         groupMake.makeGraph();
+        InducedGraph iG = new InducedGraph(groupMake.g);
+        Double[][] iGMatrix = iG.generateG();
+        Prim p = new Prim(iGMatrix);
+        ArrayList<MSTPair> pairList = p.prim();
+        ArrayList<ItemBridge> resultList = iG.transformBack(pairList);
+        System.out.println("result:---------------");
+        for(ItemBridge ib:resultList){
+            System.out.println(ib.getiNode().getName() + ":" + ib.getSumWeight());
+        }
     }
     public static void main(String[] args){
         Config.init();
@@ -53,10 +62,10 @@ public class graphRec {
         PersonList.add(Person2);
         Person Person3 = new Person("31450","34.0727","-118.3729", UserNode.Mode.DRIVING );
         PersonList.add(Person3);
-//        Person Person4 = new Person("3140","33.4531","-111.9863", UserNode.Mode.WALKING);
-//        PersonList.add(Person4);
-//        Person Person5 = new Person("17043","32.9515","-96.8286", UserNode.Mode.WALKING);
-//        PersonList.add(Person5);
+        Person Person4 = new Person("3140","33.4531","-111.9863", UserNode.Mode.WALKING);
+        PersonList.add(Person4);
+        Person Person5 = new Person("17043","32.9515","-96.8286", UserNode.Mode.WALKING);
+        PersonList.add(Person5);
 //        Person Person6 = new Person("37877","32.8978","-97.0398", UserNode.Mode.BICYCLING);
 //        PersonList.add(Person6);
 //        Person Person7 = new Person("11233","37.7878","-122.4087", UserNode.Mode.DRIVING);
