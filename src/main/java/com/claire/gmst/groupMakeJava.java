@@ -83,7 +83,9 @@ public class groupMakeJava {
                 String name =  reflection.findUserNameById(id);
                 String location = p.getLatitude() + "," + p.getLongitude();
 
-                UserNode unode = new UserNode(name,location,id);
+                UserNode unode = new UserNode(name,location,id,p.getTravelMode());
+                System.out.println(p.getTravelMode().value());
+
                 //logger.info("user " + unode.getId() + ",location" + unode.getLocation() + ",name" + unode.getName());
                 userNodeSet.add(unode);
                 //logger.info(userNodeSet.size() + "");
@@ -139,7 +141,7 @@ public class groupMakeJava {
             System.out.println(edge.getUnode().getId() + "---->" + edge.getInode().getId() + ":" + edge.getWeight());
         }
 
-        System.out.println("----------------------------------------" + edges.size());
+        System.out.println("edges.size--------------------------" + edges.size());
 
         // Fill up the graph
         for (UserNode unode : g.getUserNodes()){
@@ -267,7 +269,7 @@ public class groupMakeJava {
                 }
             }
             Long endTime = System.currentTimeMillis();
-            System.out.println("------------" + (endTime - startTime));
+            System.out.println("Run time------------" + (endTime - startTime));
             while(executor.getActiveCount() != 0){
                 try {
                     Thread.sleep(1);
@@ -312,9 +314,7 @@ public class groupMakeJava {
         executor.shutdownNow();
         System.out.println("----------------");
         for (Edge edge : g.getEdges()){
-            if(edge.getDuration() == 0) {
-                System.out.println(edge.getUnode().getLocation() + "---->" + edge.getInode().getLocation() );
-            }
+            System.out.println(edge.getUnode().getLocation() + "---->" + edge.getInode().getLocation() + ":" + edge.getDuration()/3600);
         }
 
     }

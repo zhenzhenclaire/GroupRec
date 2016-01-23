@@ -47,20 +47,20 @@ public class graphRec {
 
         ArrayList<Person> PersonList = new ArrayList<Person>();
 
-        Person Person1 = new Person("13119","40.7575","-73.9700");
+        Person Person1 = new Person("13119","40.7575","-73.9700", UserNode.Mode.BICYCLING);
         PersonList.add(Person1);
-        Person Person2 = new Person("27373","40.7596","-73.9847");
+        Person Person2 = new Person("27373","40.7596","-73.9847", UserNode.Mode.BICYCLING);
         PersonList.add(Person2);
-        Person Person3 = new Person("31450","34.0727","-118.3729");
+        Person Person3 = new Person("31450","34.0727","-118.3729", UserNode.Mode.DRIVING );
         PersonList.add(Person3);
-        Person Person4 = new Person("3140","33.4531","-111.9863");
-        PersonList.add(Person4);
-        Person Person5 = new Person("17043","32.9515","-96.8286");
-        PersonList.add(Person5);
-        Person Person6 = new Person("37877","32.8978","-97.0398");
-        PersonList.add(Person6);
-        Person Person7 = new Person("11233","37.7878","-122.4087");
-        PersonList.add(Person7);
+//        Person Person4 = new Person("3140","33.4531","-111.9863", UserNode.Mode.WALKING);
+//        PersonList.add(Person4);
+//        Person Person5 = new Person("17043","32.9515","-96.8286", UserNode.Mode.WALKING);
+//        PersonList.add(Person5);
+//        Person Person6 = new Person("37877","32.8978","-97.0398", UserNode.Mode.BICYCLING);
+//        PersonList.add(Person6);
+//        Person Person7 = new Person("11233","37.7878","-122.4087", UserNode.Mode.DRIVING);
+//        PersonList.add(Person7);
 
         String destination = "32.7974,-96.8256";
         Group group = new Group(PersonList);

@@ -7,11 +7,28 @@ public class Person {
     String latitude = "";
     String longitude = "";
     String userID = "";
+    UserNode.Mode travelMode;
+
+    public Person(String userID, String lat, String lon,UserNode.Mode mode){
+        this.userID = userID;
+        this.latitude = lat;
+        this.longitude = lon;
+        this.travelMode= mode;
+    }
+
+    public UserNode.Mode getTravelMode() {
+        return travelMode;
+    }
+
+    public void setTravelMode(UserNode.Mode travelMode) {
+        this.travelMode = travelMode;
+    }
 
     public Person(String userID, String lat, String lon){
         this.userID = userID;
         this.latitude = lat;
         this.longitude = lon;
+        this.travelMode = UserNode.Mode.DRIVING;
     }
 
     public String getLatitude() {

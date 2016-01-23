@@ -3,22 +3,44 @@ package com.claire.util;
 /**
  * Created by Claire on 1/11/2016.
  */
-public class UserNode {
 
+
+public class UserNode {
+    public enum Mode{
+        DRIVING("driving"), WALKING("walking"), BICYCLING("bicycling");
+        private String value;
+        Mode(String value){
+            this.value = value;
+        }
+        public String value(){
+            return this.value;
+        }
+    }
+
+    private Mode travelMode;
     private String name = null;
     private String location = null;
     private int id = 0;
 
     public UserNode(){
-
     }
     public UserNode(String location){
         this.location = location;
     }
-    public UserNode(String name, String location, int id) {
+
+    public UserNode(String name, String location, int id, Mode travelMode) {
         this.name = name;
         this.location = location;
         this.id = id;
+        this.travelMode = travelMode;
+    }
+
+    public Mode getTravelMode() {
+        return travelMode;
+    }
+
+    public void setTravelMode(Mode travelMode) {
+        this.travelMode = travelMode;
     }
 
     public String getName() {

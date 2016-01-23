@@ -3,6 +3,7 @@ package com.claire.preprocessing;
 import com.claire.util.Edge;
 import com.claire.util.Group;
 import com.claire.util.Person;
+import com.claire.util.UserNode;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -31,8 +32,9 @@ public class DurationComputing {
 
         String orinalAd = edge.getUnode().getLocation();
         String destAd = edge.getInode().getLocation();
+        UserNode.Mode mode = edge.getUnode().getTravelMode();
         try {
-            duration = getDurationOrDistance(GoogleMapCall(orinalAd, destAd), "duration");
+            duration = getDurationOrDistance(GoogleMapCall(orinalAd, destAd, mode), "duration");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -178,7 +180,7 @@ public class DurationComputing {
         return resultJSON;
     }
 
-    public  JSONObject GoogleMapCall(String originAd, String destinationAd) throws Exception {
+    public  JSONObject GoogleMapCall(String originAd, String destinationAd, UserNode.Mode travelMode) throws Exception {
         //URL to get the distance
         //https://maps.googleapis.com/maps/api/distancematrix/output?parameters
 
@@ -189,9 +191,13 @@ public class DurationComputing {
         String destination = destinationAd;
         destination = java.net.URLEncoder.encode(destination, "utf-8");
 
-        String baseURL = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=oriGPS&destinations=desGPS&language=en";
+        String tmode = travelMode.value();
+        tmode = java.net.URLEncoder.encode(tmode, "utf-8");
+
+        String baseURL = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=oriGPS&destinations=desGPS&mode=tmode&language=en";
         String URL = baseURL.replaceAll("oriGPS", origin);
         URL = URL.replaceAll("desGPS", destination);
+        URL = URL.replaceAll("tmode", tmode);
 
         logger.info("URL:" + URL);
 
