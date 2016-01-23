@@ -7,6 +7,12 @@ public class Edge {
     UserNode unode;
     ItemNode inode;
     double weight;
+    double duration;
+
+    public Edge(UserNode unode, ItemNode inode) {
+        this.unode = unode;
+        this.inode = inode;
+    }
 
     public Edge(UserNode unode, ItemNode inode, double weight) {
         this.unode = unode;
@@ -36,6 +42,14 @@ public class Edge {
 
     public void setWeight(double weight) {
         this.weight = weight;
+    }
+
+    public double getDuration() {
+        return duration;
+    }
+
+    public void setDuration(double duration) {
+        this.duration = duration;
     }
 
     public int hashCode(){

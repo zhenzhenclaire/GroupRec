@@ -88,7 +88,7 @@ public class ReflectionMap {
                 line = null;
                 while ((line = reader.readLine()) != null) {
                     String[] temp = line.split(",");
-                    hotelLocationMap.put(temp[0], temp[5] + "," + temp[6]);
+                    hotelLocationMap.put(temp[0], temp[6] + "," + temp[7]);
                 }
                 reader.close();
             } catch (FileNotFoundException e) {

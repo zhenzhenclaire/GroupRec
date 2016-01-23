@@ -84,6 +84,7 @@ public class ReadFromFile {
         //String dataPath = "DataResource/HotelUserInfo/part-00000";
         //String dataPath = "DataResource/CD-00001-00000002.dat";
         ReadFromFile readFromFile = new ReadFromFile();
+        Config.init();
         //readFromFile.readFileByLines(Config.dataPath + "/");
 //
 //        String inputPath = Config.dataPath + "twentyClusters/thousand20.txt";

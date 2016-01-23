@@ -20,14 +20,17 @@ public class groupMakeJava {
     Group group;
     Graph g;
     double[][] weights;
-    ReflectionMap reflection = new ReflectionMap();
+    ReflectionMap reflection;
     private String userItemRatingPath;
     private Map<Integer,String> userItems = new HashMap<Integer, String>();
+
+    public groupMakeJava(){}
 
     public groupMakeJava(Group group) {
         this.group = group;
         g = new Graph();
         userItemRatingPath = Config.parsedMatrixPath;
+        reflection = new ReflectionMap();
     }
 
     private void initializeWeightsByRating(){
@@ -154,12 +157,16 @@ public class groupMakeJava {
         }
         logger.info("Finished build original graph.");
 
-        edges = g.getEdges();
-        for (Edge edge : edges){
-            System.out.println(edge.getUnode().getName() + "---->" + edge.getInode().getName() + ":" + edge.getWeight());
-        }
+//        edges = g.getEdges();
+//        for (Edge edge : edges){
+//            System.out.println(edge.getUnode().getName() + "---->" + edge.getInode().getName() + ":" + edge.getWeight());
+//        }
 
-        System.out.println("users:" + g.getUserNodes().size() + "items:" + g.getItemNodes().size() + "edges:" + edges.size());
+        //System.out.println("users:" + g.getUserNodes().size() + "items:" + g.getItemNodes().size() + "edges:" + edges.size());
+
+        logger.info("Start calculating duration.");
+        initializeWeightsByDistance();
+        logger.info("Done calculating duration");
     }
 
     /**
@@ -280,25 +287,37 @@ public class groupMakeJava {
         logger.info("Finished filling up massing value to matrix.");
     }
 
-    private ArrayList<String> getDurationToOneDestination(ItemNode iNode){
-        DurationComputing duration = new DurationComputing();
-        ArrayList<String> durationList = null;
-        try {
-            durationList = duration.getDurationOrDistance(duration.GoogleMapCall(group,iNode.getLocation()),"duration");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        for(int i = 0;i < durationList.size();i++){
-            logger.info("Person" + i + ":" + durationList.get(i));
-        }
-        return durationList;
-    }
-
     private void initializeWeightsByDistance(){
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(300,600,200, TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<Runnable>(10000),new ThreadPoolExecutor.CallerRunsPolicy() );
+
+        for(final Edge edge: g.getEdges()){
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    DurationComputing durationComp = new DurationComputing();
+                    int duration = 0;
+                    duration = durationComp.getDurationToOneDestination(edge);
+                    edge.setDuration(duration);
+                }
+            });
+        }
+        while(executor.getActiveCount() != 0){
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        executor.shutdownNow();
+        System.out.println("----------------");
+        for (Edge edge : g.getEdges()){
+            if(edge.getDuration() == 0) {
+                System.out.println(edge.getUnode().getLocation() + "---->" + edge.getInode().getLocation() );
+            }
+        }
 
     }
-
-
 
     /**
      * Cget miss value avg(avg(uclass) + avg(iclass))
@@ -343,4 +362,71 @@ public class groupMakeJava {
             return 0;
         }
     }
+
+//    public static void main(String[] args){
+//        groupMakeJava gm = new groupMakeJava();
+//        UserNode unode = new UserNode("33.4531,-111.9863");
+//        ItemNode inode = new ItemNode("47.4161949287676,-122.297822639463");
+//        Edge edge = new Edge(unode,inode);
+//
+//        int re = gm.getDurationToOneDestination(edge);
+//        System.out.println("^^^^^^^^^^" + re);
+//    }
+    /*
+    37.7878,-122.4087---->37.7820712239237,-122.404752615726
+33.4531,-111.9863---->34.0606777704788,-118.241058532845
+37.7878,-122.4087---->47.6205226842016,-122.359717853256
+40.7575,-73.9700---->40.7561041105555,-73.9709545342324
+32.9515,-96.8286---->47.6076324465426,-122.332449700123
+32.9515,-96.8286---->37.7820712239237,-122.404752615726
+33.4531,-111.9863---->37.7861862879899,-122.411544630287
+33.4531,-111.9863---->40.7612125910001,-73.9917933418917
+32.9515,-96.8286---->47.6205226842016,-122.359717853256
+40.7575,-73.9700---->47.4161949287676,-122.297822639463
+34.0727,-118.3729---->37.7916261549677,-122.409607988594
+37.7878,-122.4087---->47.6581135708081,-122.317373576405
+33.4531,-111.9863---->47.6178554955421,-122.329883692207
+40.7575,-73.9700---->34.0525511445873,-118.250452873686
+40.7596,-73.9847---->37.7851825079676,-122.405671279144
+33.4531,-111.9863---->37.7914046819271,-122.410188832968
+32.9515,-96.8286---->47.6069464466069,-122.334162306443
+32.8978,-97.0398---->40.7612125910001,-73.9917933418917
+32.9515,-96.8286---->34.0606777704788,-118.241058532845
+33.4531,-111.9863---->42.3495174782587,-71.0795062999039
+40.7575,-73.9700---->32.7798929476977,-96.7998399204279
+40.7596,-73.9847---->37.7820712239237,-122.404752615726
+34.0727,-118.3729---->40.7561041105555,-73.9709545342324
+33.4531,-111.9863---->37.7916261549677,-122.409607988594
+Jan 23, 2016 5:45:42 PM com.claire.gmst.groupMakeJava makeGraph
+INFO: Done calculating duration
+40.7596,-73.9847---->34.1031355493014,-118.340597996934
+33.4531,-111.9863---->40.7561041105555,-73.9709545342324
+40.7596,-73.9847---->37.7914046819271,-122.410188832968
+32.8978,-97.0398---->32.7798929476977,-96.7998399204279
+40.7575,-73.9700---->47.6076324465426,-122.332449700123
+32.8978,-97.0398---->34.0496734424843,-118.240236993802
+40.7596,-73.9847---->37.7861862879899,-122.411544630287
+40.7596,-73.9847---->47.6069464466069,-122.334162306443
+40.7596,-73.9847---->40.7612125910001,-73.9917933418917
+40.7575,-73.9700---->34.0496734424843,-118.240236993802
+37.7878,-122.4087---->40.7612125910001,-73.9917933418917
+40.7575,-73.9700---->37.7851825079676,-122.405671279144
+32.8978,-97.0398---->34.1029312634910,-118.339168413719
+40.7575,-73.9700---->47.6178554955421,-122.329883692207
+34.0727,-118.3729---->47.6123491387548,-122.333257850956
+33.4531,-111.9863---->47.6581135708081,-122.317373576405
+40.7575,-73.9700---->47.6069464466069,-122.334162306443
+32.9515,-96.8286---->47.4161949287676,-122.297822639463
+40.7596,-73.9847---->34.0525511445873,-118.250452873686
+40.7575,-73.9700---->42.3495174782587,-71.0795062999039
+40.7575,-73.9700---->37.7861862879899,-122.411544630287
+32.8978,-97.0398---->34.0606777704788,-118.241058532845
+33.4531,-111.9863---->34.0525511445873,-118.250452873686
+34.0727,-118.3729---->47.6205226842016,-122.359717853256
+34.0727,-118.3729---->34.0606777704788,-118.241058532845
+34.0727,-118.3729---->47.6069464466069,-122.334162306443
+34.0727,-118.3729---->37.7820712239237,-122.404752615726
+34.0727,-118.3729---->34.0525511445873,-118.250452873686
+33.4531,-111.9863---->47.4161949287676,-122.297822639463
+     */
 }

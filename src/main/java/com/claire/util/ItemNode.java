@@ -8,6 +8,9 @@ public class ItemNode {
     private String location = null;
     private int id = 0;
 
+    public ItemNode(String location){
+        this.location = location;
+    }
     public ItemNode(int id, String name, String location) {
         this.id = id;
         this.name = name;

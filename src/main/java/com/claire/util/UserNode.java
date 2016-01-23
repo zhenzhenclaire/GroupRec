@@ -12,6 +12,9 @@ public class UserNode {
     public UserNode(){
 
     }
+    public UserNode(String location){
+        this.location = location;
+    }
     public UserNode(String name, String location, int id) {
         this.name = name;
         this.location = location;

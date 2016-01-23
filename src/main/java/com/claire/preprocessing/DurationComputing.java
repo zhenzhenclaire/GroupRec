@@ -1,5 +1,6 @@
 package com.claire.preprocessing;
 
+import com.claire.util.Edge;
 import com.claire.util.Group;
 import com.claire.util.Person;
 import org.apache.http.HttpEntity;
@@ -24,6 +25,20 @@ import java.util.logging.Logger;
 public class DurationComputing {
     static Logger logger = Logger.getLogger("DistanceComputing");
 
+    public int getDurationToOneDestination(Edge edge){
+
+        int duration = 0;
+
+        String orinalAd = edge.getUnode().getLocation();
+        String destAd = edge.getInode().getLocation();
+        try {
+            duration = getDurationOrDistance(GoogleMapCall(orinalAd, destAd), "duration");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //System.out.println("User:" + edge.getUnode().getName() + " Hotel:" + edge.getInode().getName() + " duration:" + duration);
+        return duration;
+    }
     /**
      * Get distance or duration from JSON from GoogleMap API (a group result)
      * @param resultJSON
@@ -66,20 +81,20 @@ public class DurationComputing {
      * @param type
      * @return duration or distance result
      */
-    public String getDurationOrDistance(JSONObject resultJSON, String type){
-        String duration = "";
-        String distance = "";
+    public int getDurationOrDistance(JSONObject resultJSON, String type){
+        int duration = 0;
+        int distance = 0;
 
         JSONArray ja = resultJSON.getJSONArray("rows");
 
         for(int i = 0;i < ja.length();i++){
             JSONArray elements = ja.getJSONObject(i).getJSONArray("elements");
 
-            distance = elements.getJSONObject(0).getJSONObject("distance").getString("text");
+            distance = elements.getJSONObject(0).getJSONObject("distance").getInt("value");
 
             logger.info("distance:" + distance);
 
-            duration = elements.getJSONObject(0).getJSONObject("duration").getString("text");
+            duration = elements.getJSONObject(0).getJSONObject("duration").getInt("value");
 
             logger.info("duration" + duration);
         }
@@ -99,7 +114,7 @@ public class DurationComputing {
      * @return  JSONObject of GoogleMap API
      * @throws Exception
      */
-    public JSONObject GoogleMapCall(Group group, String destinationAd) throws Exception {
+    public  JSONObject GoogleMapCall(Group group, String destinationAd) throws Exception {
         //URL to get the distance
         //https://maps.googleapis.com/maps/api/distancematrix/output?parameters
 
@@ -163,7 +178,7 @@ public class DurationComputing {
         return resultJSON;
     }
 
-    public JSONObject GoogleMapCall(String originAd, String destinationAd) throws Exception {
+    public  JSONObject GoogleMapCall(String originAd, String destinationAd) throws Exception {
         //URL to get the distance
         //https://maps.googleapis.com/maps/api/distancematrix/output?parameters
 
