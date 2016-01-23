@@ -21,9 +21,14 @@ public class UserNode {
     private String name = null;
     private String location = null;
     private int id = 0;
+    private int graphId = 0;
 
-    public UserNode(){
+    public UserNode(){}
+
+    public UserNode(int graphId){
+        this.graphId = graphId;
     }
+
     public UserNode(String location){
         this.location = location;
     }
@@ -33,6 +38,14 @@ public class UserNode {
         this.location = location;
         this.id = id;
         this.travelMode = travelMode;
+    }
+
+    public int getGraphId() {
+        return graphId;
+    }
+
+    public void setGraphId(int graphId) {
+        this.graphId = graphId;
     }
 
     public Mode getTravelMode() {

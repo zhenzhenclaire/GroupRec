@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 /**
  * Created by claire on 1/11/16.
  */
-public class groupMakeJava {
+public class GroupMake {
     static Logger logger = Logger.getLogger("groupMakeJava");
     Group group;
     Graph g;
@@ -24,9 +24,9 @@ public class groupMakeJava {
     private String userItemRatingPath;
     private Map<Integer,String> userItems = new HashMap<Integer, String>();
 
-    public groupMakeJava(){}
+    public GroupMake(){}
 
-    public groupMakeJava(Group group) {
+    public GroupMake(Group group) {
         this.group = group;
         g = new Graph();
         userItemRatingPath = Config.parsedMatrixPath;
