@@ -17,8 +17,6 @@ public class Graph {
     HashSet<ItemNode> itemNodes;
     HashSet<Edge> edges;
 
-
-
     public Graph(){
         userNodes = new HashSet<UserNode>();
         itemNodes = new HashSet<ItemNode>();

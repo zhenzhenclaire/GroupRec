@@ -71,7 +71,6 @@ public class graphRec {
 //        Person Person7 = new Person("11233","37.7878","-122.4087", UserNode.Mode.DRIVING);
 //        PersonList.add(Person7);
 
-        String destination = "32.7974,-96.8256";
         Group group = new Group(PersonList);
 
         graphRec gRec = new graphRec(group);
